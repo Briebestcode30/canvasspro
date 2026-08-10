@@ -1,0 +1,25 @@
+.notes {
+  margin-top: 30px;
+}
+
+.notes__label {
+  display: block;
+  color: #dc2626;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.notes__textarea {
+  width: 100%;
+  min-height: 180px;
+  border: 1px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 18px;
+  font-size: 16px;
+  resize: vertical;
+  outline: none;
+}
+
+.notes__textarea:focus {
+  border-color: #2563eb;
+}

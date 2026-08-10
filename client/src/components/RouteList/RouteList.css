@@ -1,0 +1,156 @@
+.route-list {
+  margin-top: 30px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+}
+
+.route-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.route-list__eyebrow {
+  margin-bottom: 4px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.route-list__header h2 {
+  color: #1e3a8a;
+}
+
+.route-list__count {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.route-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.route-list__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s ease;
+}
+
+.route-list__item:hover {
+  background: #f8fafc;
+  border-color: #2563eb;
+}
+
+.route-list__item--active {
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+.route-list__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.route-list__address {
+  flex: 1;
+  color: #1e293b;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.route-list__current {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.route-list__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.route-list__position {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.route-list__progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+
+.route-list__progress-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.route-list__details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.route-list__status {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.route-list__item--active .route-list__status {
+  color: #1e3a8a;
+}
+
+.route-list__details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.route-list__status {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.route-list__status--completed {
+  color: #166534;
+}
+
+.route-list__check {
+  color: #16a34a;
+  flex-shrink: 0;
+}

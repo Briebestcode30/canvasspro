@@ -1,0 +1,27 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px 40px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header h1 {
+  color: #1e3a8a;
+  font-size: 34px;
+}
+
+.header__profile {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.header__profile:hover {
+  background: #1d4ed8;
+}

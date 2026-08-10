@@ -1,0 +1,48 @@
+const properties = [
+  {
+    id: 1,
+    address: "123 Main Street",
+    homeowner: "John Smith",
+    age: 58,
+    family: "Jane Smith",
+    phone: "",
+    email: "",
+    latitude: 35.6722,
+    longitude: -80.4748,
+  },
+  {
+    id: 2,
+    address: "127 Main Street",
+    homeowner: "Michael Johnson",
+    age: 64,
+    family: "Sarah Johnson",
+    phone: "",
+    email: "",
+    latitude: 35.6731,
+    longitude: -80.4755,
+  },
+  {
+    id: 3,
+    address: "131 Main Street",
+    homeowner: "Robert Williams",
+    age: 47,
+    family: "Lisa Williams",
+    phone: "",
+    email: "",
+    latitude: 35.674,
+    longitude: -80.4762,
+  },
+  {
+    id: 4,
+    address: "135 Main Street",
+    homeowner: "David Brown",
+    age: 71,
+    family: "Mary Brown",
+    phone: "",
+    email: "",
+    latitude: 35.6748,
+    longitude: -80.477,
+  },
+];
+
+export default properties;

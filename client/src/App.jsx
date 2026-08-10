@@ -1,34 +1,71 @@
+import { useState } from "react";
 import "./App.css";
 
+import Sidebar from "./components/Sidebar/Sidebar";
+import Header from "./components/Header/Header";
+import DashboardStats from "./components/DashboardStats/DashboardStats";
+import RouteList from "./components/RouteList/RouteList";
+import RouteMap from "./components/RouteMap/RouteMap";
+import PropertyCard from "./components/PropertyCard/PropertyCard";
+import initialProperties from "./data/properties";
+
 function App() {
+  const [properties, setProperties] = useState(initialProperties);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const currentProperty = properties[currentIndex];
+
+  function handleNextHome() {
+    if (currentIndex < properties.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  }
+
+  function handlePreviousHome() {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  }
+
+  function handleSaveProperty(updatedProperty) {
+    setProperties((currentProperties) =>
+      currentProperties.map((property) =>
+        property.id === updatedProperty.id ? updatedProperty : property,
+      ),
+    );
+  }
+
   return (
     <div className="app">
-      <aside className="sidebar">
-        <h2>CanvassPro</h2>
-
-        <nav>
-          <ul>
-            <li>🏠 Dashboard</li>
-            <li>🗺️ Routes</li>
-            <li>📍 Properties</li>
-            <li>📜 History</li>
-            <li>⚙️ Settings</li>
-            <li>🚨 Emergency</li>
-          </ul>
-        </nav>
-      </aside>
+      <Sidebar />
 
       <main className="main-content">
-        <h1>Campaign Dashboard</h1>
+        <Header />
 
-        <div className="dashboard-card">
-          <h3>Today's Progress</h3>
+        <DashboardStats properties={properties} />
+        <div className="canvass-workspace">
+          <div className="canvass-workspace__panel">
+            <RouteList
+              properties={properties}
+              currentIndex={currentIndex}
+              onSelectProperty={setCurrentIndex}
+            />
 
-          <p>Homes Assigned: 120</p>
-          <p>Completed: 0</p>
-          <p>Remaining: 120</p>
+            <PropertyCard
+              property={currentProperty}
+              currentIndex={currentIndex}
+              totalProperties={properties.length}
+              onPrevious={handlePreviousHome}
+              onNext={handleNextHome}
+              onSaveProperty={handleSaveProperty}
+            />
+          </div>
 
-          <button>Start Route</button>
+          <RouteMap
+            properties={properties}
+            currentIndex={currentIndex}
+            onSelectProperty={setCurrentIndex}
+          />
         </div>
       </main>
     </div>

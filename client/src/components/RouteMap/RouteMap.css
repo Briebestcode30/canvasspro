@@ -1,0 +1,94 @@
+.route-map {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+  position: sticky;
+  top: 30px;
+}
+
+.route-map__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.route-map__header h2 {
+  color: #1e3a8a;
+}
+
+.route-map__eyebrow {
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.route-map__position {
+  padding: 8px 14px;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.route-map__map {
+  width: 100%;
+  height: 650px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.route-map__popup-button {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.route-map__popup-button:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 1100px) {
+  .route-map {
+    position: static;
+  }
+
+  .route-map__map {
+    height: 500px;
+  }
+}
+
+.route-map__custom-icon {
+  background: transparent;
+  border: none;
+}
+
+.route-map__numbered-marker {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: 0.2s ease;
+}
+
+.route-map__numbered-marker--active {
+  background: #dc2626;
+  transform: scale(1.15);
+}

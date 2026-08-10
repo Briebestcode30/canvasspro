@@ -1,16 +1,16 @@
 import "./Buttons.css";
 
-function NextHomeButton({ onNext, disabled }) {
+function PreviousHomeButton({ onPrevious, disabled }) {
   return (
     <button
       className="secondary-button"
       type="button"
-      onClick={onNext}
+      onClick={onPrevious}
       disabled={disabled}
     >
-      Next Home
+      Previous Home
     </button>
   );
 }
 
-export default NextHomeButton;
+export default PreviousHomeButton;
