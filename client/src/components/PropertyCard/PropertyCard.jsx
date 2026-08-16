@@ -11,82 +11,92 @@ import EmergencyButton from "../Buttons/EmergencyButton";
 
 function PropertyCard({
   property,
+  selectedPersonIndex = 0,
   currentIndex,
   totalProperties,
   onPrevious,
   onNext,
   onSaveProperty,
 }) {
-  const [homeowner, setHomeowner] = useState(property.homeowner);
-  const [age, setAge] = useState(property.age);
-  const [family, setFamily] = useState(property.family);
-  const [phone, setPhone] = useState(property.phone);
-  const [email, setEmail] = useState(property.email);
-  const [outcome, setOutcome] = useState(property.outcome || "");
-  const [knocked, setKnocked] = useState(property.knocked || false);
-  const [notes, setNotes] = useState(property.notes || "");
-  const [redDoor, setRedDoor] = useState(property.redDoor || false);
+  const currentPerson = property.people?.[selectedPersonIndex];
+
+  const redDoor = property.redDoor || false;
+
+  const [phone, setPhone] = useState(currentPerson?.phone || "");
+  const [email, setEmail] = useState(currentPerson?.email || "");
+  const [outcome, setOutcome] = useState(currentPerson?.outcome || "");
+  const [knocked, setKnocked] = useState(currentPerson?.knocked || false);
+  const [notes, setNotes] = useState(currentPerson?.notes || "");
 
   const [importantIssue, setImportantIssue] = useState(
-    property.importantIssue || "",
+    currentPerson?.importantIssue || "",
   );
 
-  const [industries, setIndustries] = useState(property.industries || []);
+  const [industries, setIndustries] = useState(currentPerson?.industries || []);
 
-  const [ctaSigned, setCtaSigned] = useState(property.ctaSigned ?? null);
+  const [ctaSigned, setCtaSigned] = useState(currentPerson?.ctaSigned ?? null);
+
+  const [waMembershipJoin, setWaMembershipJoin] = useState(
+    currentPerson?.waMembershipJoin || false,
+  );
+
+  const [textMessageOk, setTextMessageOk] = useState(
+    currentPerson?.textMessageOk || false,
+  );
+
+  const [hotContact, setHotContact] = useState(
+    currentPerson?.hotContact || false,
+  );
 
   const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
-    setHomeowner(property.homeowner);
-    setAge(property.age);
-    setFamily(property.family);
-    setPhone(property.phone);
-    setEmail(property.email);
-    setOutcome(property.outcome || "");
-    setKnocked(property.knocked || false);
-    setNotes(property.notes || "");
-    setRedDoor(property.redDoor || false);
-    setImportantIssue(property.importantIssue || "");
-    setIndustries(property.industries || []);
-    setCtaSigned(property.ctaSigned ?? null);
+    const person = property.people?.[selectedPersonIndex];
+
+    setPhone(person?.phone || "");
+    setEmail(person?.email || "");
+    setOutcome(person?.outcome || "");
+    setKnocked(person?.knocked || false);
+    setNotes(person?.notes || "");
+    setImportantIssue(person?.importantIssue || "");
+    setIndustries(person?.industries || []);
+    setCtaSigned(person?.ctaSigned ?? null);
+    setWaMembershipJoin(person?.waMembershipJoin || false);
+    setTextMessageOk(person?.textMessageOk || false);
+    setHotContact(person?.hotContact || false);
     setSaveMessage("");
-  }, [property]);
+  }, [property, selectedPersonIndex]);
 
   function handleOutcomeChange(data) {
     setOutcome(data.outcome);
     setKnocked(data.knocked);
   }
 
-  function handleRedDoorChange(event) {
-    const isRedDoor = event.target.checked;
-
-    setRedDoor(isRedDoor);
-
-    if (isRedDoor) {
-      setKnocked(false);
-      setOutcome("");
-      setImportantIssue("");
-      setIndustries([]);
-      setCtaSigned(null);
-    }
-  }
-
   function createUpdatedProperty() {
-    return {
-      ...property,
-      homeowner,
-      age,
-      family,
+    if (!currentPerson) {
+      return property;
+    }
+
+    const updatedPerson = {
+      ...currentPerson,
       phone,
       email,
       outcome,
       knocked,
       notes,
-      redDoor,
       importantIssue,
       industries,
       ctaSigned,
+      waMembershipJoin,
+      textMessageOk,
+      hotContact,
+    };
+
+    return {
+      ...property,
+      people: property.people.map((person) =>
+        person.id === currentPerson.id ? updatedPerson : person,
+      ),
     };
   }
 
@@ -114,6 +124,22 @@ function PropertyCard({
     }
   }
 
+  if (!currentPerson) {
+    return (
+      <section className="property-card">
+        <div className="property-card__header">
+          <div>
+            <p className="property-card__eyebrow">Current Property</p>
+
+            <h2>{property.address}</h2>
+          </div>
+        </div>
+
+        <p>No person is currently assigned to this address.</p>
+      </section>
+    );
+  }
+
   return (
     <section className="property-card">
       <div className="property-card__header">
@@ -134,31 +160,21 @@ function PropertyCard({
         </div>
       )}
 
+      <div className="property-card__person-summary">
+        <div>
+          <span className="property-card__summary-label">Homeowner</span>
+
+          <strong>{currentPerson.name}</strong>
+        </div>
+
+        <div>
+          <span className="property-card__summary-label">Age</span>
+
+          <strong>{currentPerson.age}</strong>
+        </div>
+      </div>
+
       <div className="property-card__info">
-        <label className="property-card__label">Homeowner</label>
-
-        <input
-          type="text"
-          value={homeowner}
-          onChange={(event) => setHomeowner(event.target.value)}
-        />
-
-        <label className="property-card__label">Age</label>
-
-        <input
-          type="number"
-          value={age}
-          onChange={(event) => setAge(event.target.value)}
-        />
-
-        <label className="property-card__label">Spouse / Adult Children</label>
-
-        <input
-          type="text"
-          value={family}
-          onChange={(event) => setFamily(event.target.value)}
-        />
-
         <label className="property-card__label">Phone Number</label>
 
         <input
@@ -177,16 +193,6 @@ function PropertyCard({
           placeholder="Enter email address"
         />
       </div>
-
-      <label className="property-card__red-door">
-        <input
-          type="checkbox"
-          checked={redDoor}
-          onChange={handleRedDoorChange}
-        />
-
-        <span>Red Door — Do Not Knock</span>
-      </label>
 
       {!redDoor && (
         <HomeownerSurvey
@@ -228,10 +234,9 @@ function PropertyCard({
               }`}
             >
               <input
-                type="radio"
-                name={`cta-${property.id}`}
+                type="checkbox"
                 checked={ctaSigned === true}
-                onChange={() => setCtaSigned(true)}
+                onChange={() => setCtaSigned(ctaSigned === true ? null : true)}
               />
 
               <span>Yes</span>
@@ -243,15 +248,52 @@ function PropertyCard({
               }`}
             >
               <input
-                type="radio"
-                name={`cta-${property.id}`}
+                type="checkbox"
                 checked={ctaSigned === false}
-                onChange={() => setCtaSigned(false)}
+                onChange={() =>
+                  setCtaSigned(ctaSigned === false ? null : false)
+                }
               />
 
               <span>No</span>
             </label>
           </div>
+        </section>
+      )}
+
+      {!redDoor && (
+        <section className="property-card__field-flags">
+          <h3>Additional Contact Information</h3>
+
+          <label className="property-card__flag">
+            <input
+              type="checkbox"
+              checked={waMembershipJoin}
+              onChange={(event) => setWaMembershipJoin(event.target.checked)}
+            />
+
+            <span>WA Membership Join</span>
+          </label>
+
+          <label className="property-card__flag">
+            <input
+              type="checkbox"
+              checked={textMessageOk}
+              onChange={(event) => setTextMessageOk(event.target.checked)}
+            />
+
+            <span>Text Message OK</span>
+          </label>
+
+          <label className="property-card__flag">
+            <input
+              type="checkbox"
+              checked={hotContact}
+              onChange={(event) => setHotContact(event.target.checked)}
+            />
+
+            <span>Hot Contact</span>
+          </label>
         </section>
       )}
 

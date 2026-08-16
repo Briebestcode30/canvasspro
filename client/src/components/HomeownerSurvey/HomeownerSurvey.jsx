@@ -30,16 +30,10 @@ function HomeownerSurvey({
     "Other",
   ];
 
-  function handleIndustryChange(industry) {
-    if (industries.includes(industry)) {
-      const updatedIndustries = industries.filter(
-        (selectedIndustry) => selectedIndustry !== industry,
-      );
+  const selectedIndustry = industries[0] || "";
 
-      onIndustriesChange(updatedIndustries);
-    } else {
-      onIndustriesChange([...industries, industry]);
-    }
+  function handleIndustryChange(industry) {
+    onIndustriesChange([industry]);
   }
 
   return (
@@ -69,15 +63,16 @@ function HomeownerSurvey({
       <div className="homeowner-survey__section">
         <h3>What industry do you work in?</h3>
 
-        <p className="homeowner-survey__helper">Select all that apply.</p>
+        <p className="homeowner-survey__helper">Select one.</p>
 
         <div className="homeowner-survey__industries">
           {industryOptions.map((industry) => (
             <label key={industry} className="homeowner-survey__option">
               <input
-                type="checkbox"
+                type="radio"
+                name="industry"
                 value={industry}
-                checked={industries.includes(industry)}
+                checked={selectedIndustry === industry}
                 onChange={() => handleIndustryChange(industry)}
               />
 

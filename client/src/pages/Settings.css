@@ -1,0 +1,86 @@
+.settings-page {
+  width: 100%;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.settings-card {
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.settings-card h2 {
+  margin: 0 0 20px;
+  color: #1e3a8a;
+  font-size: 22px;
+}
+
+.settings-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.settings-card input[type="text"],
+.settings-card input[type="email"] {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 15px;
+}
+
+.settings-card input[type="text"]:focus,
+.settings-card input[type="email"]:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.settings-option {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px !important;
+  padding: 12px 0;
+  margin-bottom: 6px !important;
+}
+
+.settings-option input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.settings-role {
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-weight: 800;
+}
+
+.settings-help {
+  margin-top: 14px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}

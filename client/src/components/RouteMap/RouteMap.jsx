@@ -160,30 +160,44 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
           }}
         />
 
-        {properties.map((property, index) => (
-          <Marker
-            key={property.id}
-            position={[property.latitude, property.longitude]}
-            icon={createNumberedIcon(index + 1, index === currentIndex)}
-            eventHandlers={{
-              click: () => onSelectProperty(index),
-            }}
-          >
-            <Popup>
-              <strong>{property.address}</strong>
-              <br />
-              Home {index + 1} of {properties.length}
-              <br />
-              <button
-                type="button"
-                className="route-map__popup-button"
-                onClick={() => onSelectProperty(index)}
-              >
-                Select Home
-              </button>
-            </Popup>
-          </Marker>
-        ))}
+        {properties.map((property, index) => {
+          const people = Array.isArray(property.people) ? property.people : [];
+
+          const primaryPerson = people[0];
+
+          return (
+            <Marker
+              key={property.id}
+              position={[property.latitude, property.longitude]}
+              icon={createNumberedIcon(index + 1, index === currentIndex)}
+              eventHandlers={{
+                click: () => onSelectProperty(index),
+              }}
+            >
+              <Popup>
+                <strong>{property.address}</strong>
+                <br />
+                {primaryPerson?.name || "No person assigned"}
+                {people.length > 1 && (
+                  <>
+                    <br />
+                    {people.length} people at this address
+                  </>
+                )}
+                <br />
+                Home {index + 1} of {properties.length}
+                <br />
+                <button
+                  type="button"
+                  className="route-map__popup-button"
+                  onClick={() => onSelectProperty(index)}
+                >
+                  Select Home
+                </button>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </section>
   );

@@ -6,7 +6,7 @@ function DashboardStats({ properties = [] }) {
   const totalHomes = properties.length;
 
   const visitedHomes = properties.filter((property) =>
-    Boolean(property.outcome || property.knocked),
+    property.people?.some((person) => person.outcome || person.knocked),
   ).length;
 
   const remainingHomes = totalHomes - visitedHomes;

@@ -6,6 +6,7 @@ function VisitOutcome({ outcome, knocked, redDoor, onOutcomeChange }) {
 
   const outcomes = [
     "Not Home",
+    "Deceased",
     "Refused",
     "Inaccessible",
     "Moved",
@@ -45,7 +46,7 @@ function VisitOutcome({ outcome, knocked, redDoor, onOutcomeChange }) {
             <label key={item}>
               <input
                 type="radio"
-                name={`outcome-${item}`}
+                name="visit-outcome"
                 value={item}
                 checked={outcome === item}
                 onChange={() => handleOutcomeChange(item)}

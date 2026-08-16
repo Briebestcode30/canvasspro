@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CheckCircle2, Filter, Search } from "lucide-react";
+
 import "./RouteList.css";
 
 function RouteList({
@@ -11,41 +12,65 @@ function RouteList({
   const [filter, setFilter] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
 
-  function isCanvassed(property) {
-    return Boolean(property.outcome || property.knocked);
+  function getPeople(property) {
+    return Array.isArray(property.people) ? property.people : [];
+  }
+
+  function isPersonCanvassed(person) {
+    return Boolean(person.outcome || person.knocked);
+  }
+
+  function isPropertyCanvassed(property) {
+    return getPeople(property).some((person) => isPersonCanvassed(person));
   }
 
   function getStatus(property) {
-    if (property.outcome && property.knocked) {
-      return `Knocked / ${property.outcome}`;
+    const people = getPeople(property);
+
+    if (people.length === 0) {
+      return "No People";
     }
 
-    if (property.knocked) {
+    const canvassedPerson = people.find(
+      (person) => person.outcome || person.knocked,
+    );
+
+    if (!canvassedPerson) {
+      return "Not Visited";
+    }
+
+    if (canvassedPerson.outcome && canvassedPerson.knocked) {
+      return `Knocked / ${canvassedPerson.outcome}`;
+    }
+
+    if (canvassedPerson.knocked) {
       return "Knocked";
     }
 
-    if (property.outcome) {
-      return property.outcome;
+    if (canvassedPerson.outcome) {
+      return canvassedPerson.outcome;
     }
 
     return "Not Visited";
   }
 
   function matchesFilter(property) {
+    const people = getPeople(property);
+
     if (filter === "All") {
       return true;
     }
 
     if (filter === "Canvassed") {
-      return isCanvassed(property);
+      return people.some((person) => isPersonCanvassed(person));
     }
 
     if (filter === "Not Home") {
-      return property.outcome === "Not Home";
+      return people.some((person) => person.outcome === "Not Home");
     }
 
     if (filter === "Refused") {
-      return property.outcome === "Refused";
+      return people.some((person) => person.outcome === "Refused");
     }
 
     return true;
@@ -60,9 +85,13 @@ function RouteList({
 
     const address = property.address?.toLowerCase() || "";
 
-    const homeowner = property.homeowner?.toLowerCase() || "";
+    const people = getPeople(property);
 
-    return address.includes(searchValue) || homeowner.includes(searchValue);
+    const matchesPerson = people.some((person) =>
+      person.name?.toLowerCase().includes(searchValue),
+    );
+
+    return address.includes(searchValue) || matchesPerson;
   }
 
   const filteredProperties = properties.filter(
@@ -158,7 +187,11 @@ function RouteList({
             (item) => item.id === property.id,
           );
 
-          const completed = isCanvassed(property);
+          const people = getPeople(property);
+
+          const firstPerson = people[0];
+
+          const completed = isPropertyCanvassed(property);
 
           return (
             <button
@@ -174,7 +207,11 @@ function RouteList({
               <span className="route-list__details">
                 <span className="route-list__address">{property.address}</span>
 
-                <span className="route-list__person">{property.homeowner}</span>
+                <span className="route-list__person">
+                  {firstPerson ? firstPerson.name : "No person assigned"}
+
+                  {people.length > 1 && ` +${people.length - 1} more`}
+                </span>
 
                 <span
                   className={`route-list__status ${

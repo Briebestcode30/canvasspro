@@ -5,6 +5,7 @@ import {
   Map,
   ChartNoAxesColumnIncreasing,
   UsersRound,
+  Settings,
   ShieldAlert,
 } from "lucide-react";
 
@@ -65,7 +66,17 @@ function Sidebar() {
             }
           >
             <UsersRound size={20} />
-            <span>Addresses/People</span>
+            <span>Addresses / People</span>
+          </NavLink>
+
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `sidebar__item ${isActive ? "active" : ""}`
+            }
+          >
+            <Settings size={20} />
+            <span>Settings</span>
           </NavLink>
         </nav>
       </div>
