@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./VisitOutcome.css";
 
-function VisitOutcome({ outcome, knocked, onOutcomeChange }) {
+function VisitOutcome({ outcome, knocked, redDoor, onOutcomeChange }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const outcomes = [
@@ -11,11 +11,7 @@ function VisitOutcome({ outcome, knocked, onOutcomeChange }) {
     "Moved",
     "Medically Incompetent",
     "Aggressive Homeowner",
-    "CTA",
-    "Industry Code",
   ];
-
-  const isInaccessible = outcome === "Inaccessible";
 
   function handleOutcomeChange(selectedOutcome) {
     const nextKnocked = selectedOutcome === "Inaccessible" ? false : knocked;
@@ -26,41 +22,30 @@ function VisitOutcome({ outcome, knocked, onOutcomeChange }) {
     });
   }
 
-  function handleKnockedChange(event) {
-    onOutcomeChange({
-      outcome,
-      knocked: event.target.checked,
-    });
-  }
-
   return (
     <section className="visit-outcome">
       <button
         type="button"
         className="visit-outcome__button"
+        disabled={redDoor}
         onClick={() => setIsOpen(!isOpen)}
       >
         I couldn't reach this contact
       </button>
 
-      {isOpen && (
+      {redDoor && (
+        <p className="visit-outcome__red-door-message">
+          This address is marked Do Not Knock.
+        </p>
+      )}
+
+      {!redDoor && isOpen && (
         <div className="visit-outcome__options">
-          <label className="visit-outcome__knocked">
-            <input
-              type="checkbox"
-              checked={knocked}
-              disabled={isInaccessible}
-              onChange={handleKnockedChange}
-            />
-
-            <span>Knocked</span>
-          </label>
-
           {outcomes.map((item) => (
             <label key={item}>
               <input
                 type="radio"
-                name="outcome"
+                name={`outcome-${item}`}
                 value={item}
                 checked={outcome === item}
                 onChange={() => handleOutcomeChange(item)}
@@ -72,9 +57,9 @@ function VisitOutcome({ outcome, knocked, onOutcomeChange }) {
         </div>
       )}
 
-      {outcome && <p className="visit-outcome__selected">Outcome: {outcome}</p>}
-
-      {knocked && <p className="visit-outcome__knocked-status">Knocked</p>}
+      {!redDoor && outcome && (
+        <p className="visit-outcome__selected">Outcome: {outcome}</p>
+      )}
     </section>
   );
 }

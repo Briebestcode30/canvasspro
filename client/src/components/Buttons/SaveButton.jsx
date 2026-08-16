@@ -1,6 +1,6 @@
 import "./Buttons.css";
 
-function SaveButton({ onSave, onSaveAndNext }) {
+function SaveButton({ onSave, onSaveAndNext, disableSaveAndNext = false }) {
   return (
     <>
       <button className="primary-button" type="button" onClick={onSave}>
@@ -11,6 +11,7 @@ function SaveButton({ onSave, onSaveAndNext }) {
         className="save-next-button"
         type="button"
         onClick={onSaveAndNext}
+        disabled={disableSaveAndNext}
       >
         Save & Next Home
       </button>

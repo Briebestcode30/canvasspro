@@ -1,48 +1,80 @@
 import "./Sidebar.css";
+
 import {
   LayoutDashboard,
   Map,
-  House,
-  History,
-  Settings,
+  ChartNoAxesColumnIncreasing,
+  UsersRound,
   ShieldAlert,
 } from "lucide-react";
 
+import { NavLink } from "react-router-dom";
+
 function Sidebar() {
+  function handleEmergencyCall() {
+    const confirmed = window.confirm("Call 911 emergency services?");
+
+    if (confirmed) {
+      window.location.href = "tel:911";
+    }
+  }
+
   return (
     <aside className="sidebar">
       <div>
-        <h2 className="sidebar__logo">CanvassNow</h2>
+        <div className="sidebar__logo">
+          <h2>CanvassNow</h2>
+        </div>
 
         <nav className="sidebar__nav">
-          <button className="sidebar__item active">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `sidebar__item ${isActive ? "active" : ""}`
+            }
+          >
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
-          </button>
+          </NavLink>
 
-          <button className="sidebar__item">
+          <NavLink
+            to="/routes"
+            className={({ isActive }) =>
+              `sidebar__item ${isActive ? "active" : ""}`
+            }
+          >
             <Map size={20} />
             <span>Routes</span>
-          </button>
+          </NavLink>
 
-          <button className="sidebar__item">
-            <House size={20} />
-            <span>Properties</span>
-          </button>
+          <NavLink
+            to="/progress"
+            className={({ isActive }) =>
+              `sidebar__item ${isActive ? "active" : ""}`
+            }
+          >
+            <ChartNoAxesColumnIncreasing size={20} />
+            <span>Progress</span>
+          </NavLink>
 
-          <button className="sidebar__item">
-            <History size={20} />
-            <span>History</span>
-          </button>
-
-          <button className="sidebar__item">
-            <Settings size={20} />
-            <span>Settings</span>
-          </button>
+          <NavLink
+            to="/addresses"
+            className={({ isActive }) =>
+              `sidebar__item ${isActive ? "active" : ""}`
+            }
+          >
+            <UsersRound size={20} />
+            <span>Addresses/People</span>
+          </NavLink>
         </nav>
       </div>
 
-      <button className="sidebar__emergency">
+      <button
+        type="button"
+        className="sidebar__emergency"
+        onClick={handleEmergencyCall}
+      >
         <ShieldAlert size={20} />
         <span>Emergency 911</span>
       </button>

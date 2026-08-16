@@ -44,3 +44,22 @@ body {
     padding: 16px;
   }
 }
+
+.page-heading {
+  margin-bottom: 30px;
+}
+
+.page-heading h1 {
+  color: #1e3a8a;
+  margin-bottom: 8px;
+}
+
+.page-heading p {
+  color: #64748b;
+}
+
+.addresses-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}

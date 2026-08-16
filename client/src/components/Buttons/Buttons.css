@@ -1,83 +1,87 @@
 .primary-button,
 .secondary-button,
-.danger-button {
-  padding: 16px 26px;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.primary-button {
-  background: #2563eb;
-  color: white;
-  border: none;
-}
-
-.primary-button:hover {
-  background: #1d4ed8;
-}
-
-.secondary-button {
-  background: white;
-  color: #2563eb;
-  border: 2px solid #2563eb;
-}
-
-.secondary-button:hover {
-  background: #eff6ff;
-}
-
-.danger-button {
-  background: #dc2626;
-  color: white;
-  border: none;
-}
-
-.danger-button:hover {
-  background: #b91c1c;
-}
-
-.secondary-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+.danger-button,
 .save-next-button {
   padding: 16px 26px;
   border-radius: 999px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* Save */
+.primary-button {
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+/* Previous / Next */
+.secondary-button {
+  border: 2px solid #2563eb;
+  background: #ffffff;
+  color: #2563eb;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #eff6ff;
+}
+
+/* Save & Next */
+.save-next-button {
   border: 2px solid #1e3a8a;
   background: #1e3a8a;
   color: #ffffff;
-  transition: all 0.2s ease;
 }
 
-.save-next-button:hover {
-  background: #172554;
+.save-next-button:hover:not(:disabled) {
   border-color: #172554;
+  background: #172554;
 }
 
-.save-next-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* Emergency */
 .danger-button {
-  padding: 16px 26px;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
   border: none;
   background: #dc2626;
   color: #ffffff;
-  transition: all 0.2s ease;
 }
 
-.danger-button:hover {
+.danger-button:hover:not(:disabled) {
   background: #b91c1c;
+}
+
+/* Button press effect */
+.primary-button:active:not(:disabled),
+.secondary-button:active:not(:disabled),
+.danger-button:active:not(:disabled),
+.save-next-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Disabled buttons */
+.primary-button:disabled,
+.secondary-button:disabled,
+.danger-button:disabled,
+.save-next-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .primary-button,
+  .secondary-button,
+  .danger-button,
+  .save-next-button {
+    width: 100%;
+  }
 }

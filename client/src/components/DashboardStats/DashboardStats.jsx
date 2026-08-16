@@ -2,11 +2,11 @@ import "./DashboardStats.css";
 
 import { Home, CheckCircle2, MapPinned, Target } from "lucide-react";
 
-function DashboardStats({ properties }) {
+function DashboardStats({ properties = [] }) {
   const totalHomes = properties.length;
 
-  const visitedHomes = properties.filter(
-    (property) => property.outcome || property.knocked,
+  const visitedHomes = properties.filter((property) =>
+    Boolean(property.outcome || property.knocked),
   ).length;
 
   const remainingHomes = totalHomes - visitedHomes;

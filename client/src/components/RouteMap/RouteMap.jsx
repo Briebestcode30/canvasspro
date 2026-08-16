@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -6,12 +7,12 @@ import {
   TileLayer,
   useMap,
 } from "react-leaflet";
-
-import { useEffect } from "react";
 import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 import "./RouteMap.css";
+
+import { getWalkingRoute } from "../../services/routeService";
 
 function MapController({ property }) {
   const map = useMap();
@@ -42,12 +43,77 @@ function createNumberedIcon(number, isActive) {
 }
 
 function RouteMap({ properties, currentIndex, onSelectProperty }) {
+  const [walkingRoute, setWalkingRoute] = useState([]);
+  const [distance, setDistance] = useState(null);
+  const [duration, setDuration] = useState(null);
+  const [routeError, setRouteError] = useState("");
+
   const currentProperty = properties[currentIndex];
 
-  const routePositions = properties.map((property) => [
+  const fallbackRoute = properties.map((property) => [
     property.latitude,
     property.longitude,
   ]);
+
+  useEffect(() => {
+    async function loadWalkingRoute() {
+      try {
+        setRouteError("");
+
+        const route = await getWalkingRoute(properties);
+
+        const feature = route.features?.[0];
+
+        if (!feature) {
+          throw new Error("No walking route was returned.");
+        }
+
+        const positions = feature.geometry.coordinates.map(
+          ([longitude, latitude]) => [latitude, longitude],
+        );
+
+        setWalkingRoute(positions);
+
+        const summary = feature.properties?.summary;
+
+        setDistance(summary?.distance ?? null);
+
+        setDuration(summary?.duration ?? null);
+      } catch (error) {
+        console.error(error);
+
+        setWalkingRoute([]);
+
+        setRouteError(
+          "Walking directions unavailable. Showing route stops instead.",
+        );
+      }
+    }
+
+    if (properties.length >= 2) {
+      loadWalkingRoute();
+    } else {
+      setWalkingRoute([]);
+      setDistance(null);
+      setDuration(null);
+      setRouteError("");
+    }
+  }, [properties]);
+
+  if (!currentProperty) {
+    return (
+      <section className="route-map">
+        <p>No route available.</p>
+      </section>
+    );
+  }
+
+  const distanceMiles =
+    distance !== null ? (distance / 1609.344).toFixed(2) : null;
+
+  const durationMinutes = duration !== null ? Math.round(duration / 60) : null;
+
+  const displayedRoute = walkingRoute.length > 0 ? walkingRoute : fallbackRoute;
 
   return (
     <section className="route-map">
@@ -63,6 +129,16 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         </span>
       </div>
 
+      <div className="route-map__summary">
+        <span>{properties.length} Stops</span>
+
+        {distanceMiles && <span>{distanceMiles} miles</span>}
+
+        {durationMinutes && <span>{durationMinutes} min</span>}
+      </div>
+
+      {routeError && <p className="route-map__warning">{routeError}</p>}
+
       <MapContainer
         center={[currentProperty.latitude, currentProperty.longitude]}
         zoom={17}
@@ -76,11 +152,11 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         />
 
         <Polyline
-          positions={routePositions}
+          positions={displayedRoute}
           pathOptions={{
             color: "#2563eb",
             weight: 5,
-            opacity: 0.8,
+            opacity: 0.85,
           }}
         />
 

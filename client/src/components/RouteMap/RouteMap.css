@@ -11,26 +11,56 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
 .route-map__header h2 {
+  margin: 0;
   color: #1e3a8a;
 }
 
 .route-map__eyebrow {
+  margin-bottom: 5px;
   color: #dc2626;
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 5px;
 }
 
 .route-map__position {
   padding: 8px 14px;
+  border-radius: 999px;
   background: #eff6ff;
   color: #2563eb;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.route-map__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.route-map__summary span {
+  padding: 8px 14px;
   border-radius: 999px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.route-map__warning {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  background: #fff7f7;
+  color: #b91c1c;
   font-size: 14px;
   font-weight: 700;
 }
@@ -40,6 +70,32 @@
   height: 650px;
   border-radius: 16px;
   overflow: hidden;
+}
+
+.route-map__custom-icon {
+  background: transparent;
+  border: none;
+}
+
+.route-map__numbered-marker {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: 0.2s ease;
+}
+
+.route-map__numbered-marker--active {
+  background: #dc2626;
+  transform: scale(1.15);
 }
 
 .route-map__popup-button {
@@ -67,28 +123,17 @@
   }
 }
 
-.route-map__custom-icon {
-  background: transparent;
-  border: none;
-}
+@media (max-width: 700px) {
+  .route-map {
+    padding: 16px;
+  }
 
-.route-map__numbered-marker {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #2563eb;
-  color: #ffffff;
-  border: 3px solid #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 800;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: 0.2s ease;
-}
+  .route-map__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-.route-map__numbered-marker--active {
-  background: #dc2626;
-  transform: scale(1.15);
+  .route-map__map {
+    height: 420px;
+  }
 }

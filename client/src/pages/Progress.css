@@ -1,0 +1,82 @@
+.progress-page {
+  width: 100%;
+}
+
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.progress-card {
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transition: 0.2s ease;
+}
+
+.progress-card:hover {
+  transform: translateY(-3px);
+  border-color: #bfdbfe;
+}
+
+.progress-card__label {
+  display: block;
+  margin-bottom: 12px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.progress-card strong {
+  color: #1e3a8a;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.progress-section {
+  margin-top: 44px;
+  padding-top: 32px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.progress-section .page-heading {
+  margin-bottom: 22px;
+}
+
+.progress-section .page-heading h2 {
+  margin-bottom: 8px;
+  color: #1e3a8a;
+  font-size: 26px;
+}
+
+.progress-section .page-heading p {
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .progress-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-card {
+    padding: 20px;
+  }
+
+  .progress-card strong {
+    font-size: 30px;
+  }
+
+  .progress-section {
+    margin-top: 32px;
+    padding-top: 24px;
+  }
+}
