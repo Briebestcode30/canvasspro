@@ -22,6 +22,11 @@
   font-size: 22px;
 }
 
+.settings-card form {
+  display: flex;
+  flex-direction: column;
+}
+
 .settings-card label {
   display: flex;
   flex-direction: column;
@@ -32,7 +37,9 @@
 }
 
 .settings-card input[type="text"],
-.settings-card input[type="email"] {
+.settings-card input[type="email"],
+.settings-card input[type="password"],
+.settings-card select {
   width: 100%;
   padding: 13px 14px;
   border: 1px solid #cbd5e1;
@@ -43,9 +50,15 @@
 }
 
 .settings-card input[type="text"]:focus,
-.settings-card input[type="email"]:focus {
+.settings-card input[type="email"]:focus,
+.settings-card input[type="password"]:focus,
+.settings-card select:focus {
   outline: none;
   border-color: #2563eb;
+}
+
+.settings-card select {
+  cursor: pointer;
 }
 
 .settings-option {
@@ -59,15 +72,31 @@
 .settings-option input {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
   margin: 0;
   accent-color: #2563eb;
   cursor: pointer;
 }
 
+.settings-account-name {
+  margin: 0 0 8px;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.settings-account-position {
+  margin: 0 0 14px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .settings-role {
   width: fit-content;
+  margin: 0;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 12px;
   background: #eff6ff;
   color: #1e3a8a;
   font-weight: 800;
@@ -79,8 +108,50 @@
   line-height: 1.6;
 }
 
+.settings-save {
+  width: fit-content;
+  min-width: 140px;
+  min-height: 42px;
+  margin-top: 4px;
+  padding: 9px 16px;
+  border: 2px solid #2563eb;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.settings-save:hover {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+}
+
+.settings-save:active {
+  transform: scale(0.98);
+}
+
+.settings-save-message {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 @media (max-width: 800px) {
   .settings-grid {
     grid-template-columns: 1fr;
+  }
+
+  .settings-save {
+    width: 100%;
   }
 }

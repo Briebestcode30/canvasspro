@@ -1,16 +1,16 @@
 .route-map {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 24px;
   position: sticky;
   top: 30px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #ffffff;
 }
 
 .route-map__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -54,6 +54,79 @@
   font-weight: 700;
 }
 
+/* MY LOCATION CONTROLS */
+
+.route-map__location-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.route-map__location-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 16px;
+  border: 2px solid #111827;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.route-map__location-button:hover {
+  border-color: #000000;
+  background: #000000;
+}
+
+.route-map__location-button:active {
+  transform: scale(0.97);
+}
+
+.route-map__location-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.route-map__location-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  transform: rotate(-45deg);
+}
+
+.route-map__location-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.route-map__location-status::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+/* WARNINGS */
+
 .route-map__warning {
   margin-bottom: 16px;
   padding: 12px 16px;
@@ -65,12 +138,16 @@
   font-weight: 700;
 }
 
+/* MAP */
+
 .route-map__map {
   width: 100%;
   height: 650px;
   border-radius: 16px;
   overflow: hidden;
 }
+
+/* ADDRESS MARKERS */
 
 .route-map__custom-icon {
   background: transparent;
@@ -90,13 +167,45 @@
   font-size: 16px;
   font-weight: 800;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .route-map__numbered-marker--active {
   background: #dc2626;
   transform: scale(1.15);
 }
+
+/* BLACK USER LOCATION PIN */
+
+.route-map__user-location-icon {
+  background: transparent;
+  border: none;
+}
+
+.route-map__user-location-marker {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  background: #000000;
+  box-shadow:
+    0 0 0 4px rgba(0, 0, 0, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.route-map__user-location-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+/* POPUP */
 
 .route-map__popup-button {
   margin-top: 10px;
@@ -112,6 +221,8 @@
 .route-map__popup-button:hover {
   background: #1d4ed8;
 }
+
+/* TABLET */
 
 @media (max-width: 1100px) {
   .route-map {
@@ -131,6 +242,15 @@
   .route-map__header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .route-map__location-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .route-map__location-button {
+    width: 100%;
   }
 
   .route-map__map {

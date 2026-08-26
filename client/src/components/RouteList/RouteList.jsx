@@ -17,7 +17,13 @@ function RouteList({
   }
 
   function isPersonCanvassed(person) {
-    return Boolean(person.outcome || person.knocked);
+    return Boolean(
+      person.outcome ||
+      person.knocked ||
+      person.ctaSigned === true ||
+      person.phone?.trim() ||
+      person.email?.trim(),
+    );
   }
 
   function isPropertyCanvassed(property) {
@@ -31,27 +37,19 @@ function RouteList({
       return "No People";
     }
 
-    const canvassedPerson = people.find(
-      (person) => person.outcome || person.knocked,
+    const canvassedPeople = people.filter((person) =>
+      isPersonCanvassed(person),
     );
 
-    if (!canvassedPerson) {
+    if (canvassedPeople.length === 0) {
       return "Not Visited";
     }
 
-    if (canvassedPerson.outcome && canvassedPerson.knocked) {
-      return `Knocked / ${canvassedPerson.outcome}`;
+    if (canvassedPeople.length === people.length) {
+      return "Canvassed";
     }
 
-    if (canvassedPerson.knocked) {
-      return "Knocked";
-    }
-
-    if (canvassedPerson.outcome) {
-      return canvassedPerson.outcome;
-    }
-
-    return "Not Visited";
+    return `${canvassedPeople.length} of ${people.length} Canvassed`;
   }
 
   function matchesFilter(property) {
@@ -100,6 +98,11 @@ function RouteList({
 
   const hasActiveSearch = searchTerm.trim() !== "" || filter !== "All";
 
+  const totalPeople = properties.reduce(
+    (total, property) => total + getPeople(property).length,
+    0,
+  );
+
   function handleClear() {
     setSearchTerm("");
     setFilter("All");
@@ -116,6 +119,10 @@ function RouteList({
 
         <div className="route-list__progress">
           <span className="route-list__count">{properties.length} Homes</span>
+
+          <span className="route-list__people-count">
+            {totalPeople} {totalPeople === 1 ? "Person" : "People"}
+          </span>
 
           <span className="route-list__position">
             Home {currentIndex + 1} of {properties.length}
@@ -158,11 +165,8 @@ function RouteList({
           onChange={(event) => setFilter(event.target.value)}
         >
           <option value="All">All</option>
-
           <option value="Canvassed">Canvassed</option>
-
           <option value="Not Home">Not Home</option>
-
           <option value="Refused">Refused</option>
         </select>
       </div>
@@ -178,7 +182,7 @@ function RouteList({
       )}
 
       <p className="route-list__results">
-        Showing {filteredProperties.length} of {properties.length}
+        Showing {filteredProperties.length} of {properties.length} addresses
       </p>
 
       <div className="route-list__items">
@@ -188,8 +192,6 @@ function RouteList({
           );
 
           const people = getPeople(property);
-
-          const firstPerson = people[0];
 
           const completed = isPropertyCanvassed(property);
 
@@ -207,10 +209,18 @@ function RouteList({
               <span className="route-list__details">
                 <span className="route-list__address">{property.address}</span>
 
-                <span className="route-list__person">
-                  {firstPerson ? firstPerson.name : "No person assigned"}
-
-                  {people.length > 1 && ` +${people.length - 1} more`}
+                <span className="route-list__people">
+                  {people.length > 0 ? (
+                    people.map((person) => (
+                      <span key={person.id} className="route-list__person">
+                        {person.name}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="route-list__person">
+                      No person assigned
+                    </span>
+                  )}
                 </span>
 
                 <span

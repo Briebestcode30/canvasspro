@@ -4,6 +4,7 @@ import "./App.css";
 
 import Progress from "./pages/Progress";
 import SettingsPage from "./pages/Settings";
+import Login from "./pages/Login";
 
 import Sidebar from "./components/Sidebar/Sidebar";
 import Header from "./components/Header/Header";
@@ -16,6 +17,7 @@ import AddAddressForm from "./components/AddAddressForm/AddAddressForm";
 
 import initialProperties from "./data/properties";
 import { optimizeRoute } from "./utils/routeUtils";
+import { geocodeAddress } from "./services/routeService";
 
 function App() {
   const [properties, setProperties] = useState(initialProperties);
@@ -24,6 +26,45 @@ function App() {
 
   const [showAddPersonForm, setShowAddPersonForm] = useState(false);
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
+
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const [shiftNotes, setShiftNotes] = useState("");
+
+  const [hourlyAnalysis, setHourlyAnalysis] = useState({
+    "3:00 PM": {
+      plusOne: "",
+      delta: "",
+      plusTwo: "",
+    },
+    "4:00 PM": {
+      plusOne: "",
+      delta: "",
+      plusTwo: "",
+    },
+    "5:00 PM": {
+      plusOne: "",
+      delta: "",
+      plusTwo: "",
+    },
+    "6:00 PM": {
+      plusOne: "",
+      delta: "",
+      plusTwo: "",
+    },
+    "7:00 PM": {
+      plusOne: "",
+      delta: "",
+      plusTwo: "",
+    },
+    "8:00 PM": {
+      plusOne: "",
+      delta: "",
+      plusTwo: "",
+    },
+  });
+
+  const isLoggedIn = Boolean(currentUser);
 
   const canvassableProperties = properties.filter(
     (property) => !property.redDoor,
@@ -37,29 +78,44 @@ function App() {
 
   const currentPerson = currentPeople[currentPersonIndex];
 
-  function createEmptyPerson(name, age) {
-    return {
-      id: Date.now() + Math.random(),
-      name,
-      age,
-      phone: "",
-      email: "",
-      notes: "",
-      outcome: "",
-      knocked: false,
-      importantIssue: "",
-      industries: [],
-      ctaSigned: null,
-      waMembershipJoin: false,
-      textMessageOk: false,
-      hotContact: false,
-    };
+  function isPersonVisited(person) {
+    return Boolean(
+      person.outcome ||
+      person.knocked ||
+      person.ctaSigned !== null ||
+      person.phone?.trim() ||
+      person.email?.trim() ||
+      person.importantIssue ||
+      (Array.isArray(person.industries) && person.industries.length > 0) ||
+      person.waMembershipJoin === true ||
+      person.textMessageOk === true ||
+      person.hotContact === true,
+    );
   }
 
   function isPropertyVisited(property) {
-    return Boolean(
-      property.people?.some((person) => person.outcome || person.knocked),
-    );
+    return Boolean(property.people?.some((person) => isPersonVisited(person)));
+  }
+
+  function handleLogin({ email }) {
+    setCurrentUser({
+      fullName: "",
+      email,
+      position: "Canvasser",
+      organizationRole: "Canvasser",
+    });
+  }
+
+  function handleLogout() {
+    setCurrentUser(null);
+    setCurrentIndex(0);
+    setCurrentPersonIndex(0);
+    setShowAddPersonForm(false);
+    setShowAddAddressForm(false);
+  }
+
+  function handleUpdateUser(updatedUser) {
+    setCurrentUser(updatedUser);
   }
 
   function handleSelectProperty(index) {
@@ -109,12 +165,28 @@ function App() {
     setShowAddPersonForm(false);
   }
 
-  function handleAddPerson({ name, age }) {
+  function handleAddPerson(person) {
     if (!currentProperty) {
       return;
     }
 
-    const newPerson = createEmptyPerson(name, age);
+    const newPerson = {
+      id: Date.now() + Math.random(),
+      name: person.name,
+      age: person.age,
+      phone: person.phone || "",
+      email: person.email || "",
+      notes: person.notes || "",
+      outcome: person.outcome || "",
+      knocked: person.knocked || false,
+      importantIssue: person.importantIssue || "",
+      industries: Array.isArray(person.industries) ? person.industries : [],
+      ctaSigned: person.ctaSigned ?? null,
+      waMembershipJoin: person.waMembershipJoin || false,
+      textMessageOk: person.textMessageOk || false,
+      hotContact: person.hotContact || false,
+    };
+
     const newPersonIndex = currentPeople.length;
 
     setProperties((currentProperties) =>
@@ -132,32 +204,53 @@ function App() {
     setShowAddPersonForm(false);
   }
 
-  function handleAddNewAddress({ address, name, age }) {
-    const newPerson = createEmptyPerson(name, age);
+  async function handleAddNewAddress({ address, person }) {
+    try {
+      const location = await geocodeAddress(address);
 
-    const fallbackLatitude =
-      currentProperty?.latitude ?? canvassableProperties[0]?.latitude ?? 0;
+      const newPerson = {
+        id: Date.now() + Math.random(),
+        name: person.name,
+        age: person.age,
+        phone: person.phone || "",
+        email: person.email || "",
+        notes: person.notes || "",
+        outcome: person.outcome || "",
+        knocked: person.knocked || false,
+        importantIssue: person.importantIssue || "",
+        industries: Array.isArray(person.industries) ? person.industries : [],
+        ctaSigned: person.ctaSigned ?? null,
+        waMembershipJoin: person.waMembershipJoin || false,
+        textMessageOk: person.textMessageOk || false,
+        hotContact: person.hotContact || false,
+      };
 
-    const fallbackLongitude =
-      currentProperty?.longitude ?? canvassableProperties[0]?.longitude ?? 0;
+      const newProperty = {
+        id: Date.now(),
+        address: location.label || address,
+        redDoor: false,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        needsGeocoding: false,
+        people: [newPerson],
+      };
 
-    const newProperty = {
-      id: Date.now(),
-      address,
-      redDoor: false,
-      latitude: fallbackLatitude,
-      longitude: fallbackLongitude,
-      needsGeocoding: true,
-      people: [newPerson],
-    };
+      const newIndex = canvassableProperties.length;
 
-    const newIndex = canvassableProperties.length;
+      setProperties((currentProperties) => [...currentProperties, newProperty]);
 
-    setProperties((currentProperties) => [...currentProperties, newProperty]);
+      setCurrentIndex(newIndex);
+      setCurrentPersonIndex(0);
+      setShowAddAddressForm(false);
+      setShowAddPersonForm(false);
+    } catch (error) {
+      console.error("Could not add new address:", error);
 
-    setCurrentIndex(newIndex);
-    setCurrentPersonIndex(0);
-    setShowAddAddressForm(false);
+      window.alert(
+        error.message ||
+          "The address could not be found. Please check the address and try again.",
+      );
+    }
   }
 
   function handleOptimizeRoute() {
@@ -181,6 +274,16 @@ function App() {
 
     setCurrentIndex(0);
     setCurrentPersonIndex(0);
+  }
+
+  function handleAnalysisChange(time, field, value) {
+    setHourlyAnalysis((currentAnalysis) => ({
+      ...currentAnalysis,
+      [time]: {
+        ...currentAnalysis[time],
+        [field]: value,
+      },
+    }));
   }
 
   function PersonSelector() {
@@ -212,7 +315,6 @@ function App() {
               onClick={() => handleSelectPerson(index)}
             >
               <span>{person.name}</span>
-
               <small>Age {person.age}</small>
             </button>
           ))}
@@ -225,6 +327,15 @@ function App() {
     const visitedHomes = canvassableProperties.filter(isPropertyVisited).length;
 
     const remainingHomes = canvassableProperties.length - visitedHomes;
+
+    const analysisTimes = [
+      "3:00 PM",
+      "4:00 PM",
+      "5:00 PM",
+      "6:00 PM",
+      "7:00 PM",
+      "8:00 PM",
+    ];
 
     return (
       <>
@@ -269,6 +380,92 @@ function App() {
         ) : (
           <p>No canvassable addresses remain.</p>
         )}
+
+        <section className="dashboard-shift">
+          <div className="dashboard-shift__notes">
+            <h2>Shift Notes</h2>
+
+            <p className="dashboard-shift__helper">
+              Add notes that apply to the entire shift.
+            </p>
+
+            <textarea
+              value={shiftNotes}
+              onChange={(event) => setShiftNotes(event.target.value)}
+              placeholder="Enter shift notes..."
+            />
+          </div>
+
+          <div className="dashboard-analysis">
+            <h2>Hourly Plus / Delta / Plus</h2>
+
+            <p className="dashboard-analysis__helper">
+              Record what went well, what can improve, and another positive for
+              each hour.
+            </p>
+
+            <div className="dashboard-analysis__list">
+              {analysisTimes.map((time) => (
+                <div key={time} className="dashboard-analysis__hour">
+                  <span className="dashboard-analysis__time">{time}</span>
+
+                  <div className="dashboard-analysis__fields">
+                    <label className="dashboard-analysis__field">
+                      <span>Plus</span>
+
+                      <input
+                        type="text"
+                        value={hourlyAnalysis[time].plusOne}
+                        onChange={(event) =>
+                          handleAnalysisChange(
+                            time,
+                            "plusOne",
+                            event.target.value,
+                          )
+                        }
+                        placeholder="What went well?"
+                      />
+                    </label>
+
+                    <label className="dashboard-analysis__field">
+                      <span>Delta</span>
+
+                      <input
+                        type="text"
+                        value={hourlyAnalysis[time].delta}
+                        onChange={(event) =>
+                          handleAnalysisChange(
+                            time,
+                            "delta",
+                            event.target.value,
+                          )
+                        }
+                        placeholder="What can improve?"
+                      />
+                    </label>
+
+                    <label className="dashboard-analysis__field">
+                      <span>Plus</span>
+
+                      <input
+                        type="text"
+                        value={hourlyAnalysis[time].plusTwo}
+                        onChange={(event) =>
+                          handleAnalysisChange(
+                            time,
+                            "plusTwo",
+                            event.target.value,
+                          )
+                        }
+                        placeholder="Another positive"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </>
     );
   }
@@ -286,11 +483,8 @@ function App() {
 
         <nav className="route-page-links">
           <NavLink to="/">Dashboard</NavLink>
-
           <NavLink to="/progress">Progress</NavLink>
-
           <NavLink to="/addresses">Addresses / People</NavLink>
-
           <NavLink to="/settings">Settings</NavLink>
         </nav>
 
@@ -397,30 +591,40 @@ function App() {
     );
   }
 
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <div className="app">
-      <Sidebar />
+      <Sidebar onLogout={handleLogout} />
 
       <main className="main-content">
-        <Header />
+        <Header currentUser={currentUser} />
 
         <Routes>
           <Route path="/" element={<DashboardPage />} />
-
           <Route path="/routes" element={<RoutesPage />} />
-
           <Route path="/progress" element={<ProgressPage />} />
 
           <Route path="/addresses" element={<AddressesPeoplePage />} />
 
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route
+            path="/settings"
+            element={
+              <SettingsPage
+                isLoggedIn={isLoggedIn}
+                currentUser={currentUser}
+                onUpdateUser={handleUpdateUser}
+              />
+            }
+          />
 
           <Route
             path="*"
             element={
               <div className="page-heading">
                 <h1>Page Not Found</h1>
-
                 <p>The page you requested does not exist.</p>
               </div>
             }

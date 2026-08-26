@@ -100,18 +100,18 @@ body {
 .dashboard-overview__continue {
   grid-column: 1 / -1;
   width: fit-content;
-  min-width: 190px;
-  min-height: 52px;
+  min-width: 165px;
+  min-height: 46px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 24px;
+  padding: 10px 18px;
   border: 2px solid #2563eb;
-  border-radius: 999px;
+  border-radius: 12px;
   background: #2563eb;
   color: #ffffff;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
   text-decoration: none;
   transition:
     background-color 0.2s ease,
@@ -128,6 +128,123 @@ body {
 
 .dashboard-overview__continue:active {
   transform: scale(0.98);
+}
+
+.dashboard-shift {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.dashboard-shift__notes,
+.dashboard-analysis {
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+.dashboard-shift__notes h2,
+.dashboard-analysis h2 {
+  margin: 0 0 8px;
+  color: #1e3a8a;
+  font-size: 22px;
+}
+
+.dashboard-shift__helper,
+.dashboard-analysis__helper {
+  margin-bottom: 18px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dashboard-shift__notes textarea {
+  width: 100%;
+  min-height: 220px;
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  background: #f8fafc;
+  color: #1e293b;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.dashboard-shift__notes textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: #ffffff;
+}
+
+.dashboard-shift__notes textarea::placeholder {
+  color: #94a3b8;
+}
+
+.dashboard-analysis__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-analysis__hour {
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.dashboard-analysis__time {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dashboard-analysis__fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dashboard-analysis__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dashboard-analysis__field span {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dashboard-analysis__field input {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.dashboard-analysis__field input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.dashboard-analysis__field input::placeholder {
+  color: #94a3b8;
 }
 
 .canvass-workspace {
@@ -183,19 +300,20 @@ body {
 
 .addresses-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
   margin-bottom: 24px;
 }
 
 .addresses-actions__button {
-  min-height: 48px;
-  padding: 12px 18px;
+  min-height: 40px;
+  padding: 8px 14px;
   border: 2px solid #2563eb;
-  border-radius: 999px;
+  border-radius: 12px;
   background: #2563eb;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -210,6 +328,7 @@ body {
 }
 
 .addresses-actions__button--secondary {
+  margin-left: auto;
   background: #ffffff;
   color: #2563eb;
 }
@@ -310,6 +429,16 @@ body {
   .dashboard-overview {
     grid-template-columns: 1fr;
   }
+
+  .dashboard-shift {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 750px) {
+  .dashboard-analysis__fields {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 700px) {
@@ -328,10 +457,13 @@ body {
 
   .addresses-actions {
     flex-direction: column;
+    align-items: stretch;
   }
 
-  .addresses-actions__button {
+  .addresses-actions__button,
+  .addresses-actions__button--secondary {
     width: 100%;
+    margin-left: 0;
   }
 
   .person-selector {
@@ -350,5 +482,10 @@ body {
 
   .dashboard-overview__continue {
     width: 100%;
+  }
+
+  .dashboard-shift__notes,
+  .dashboard-analysis {
+    padding: 20px;
   }
 }

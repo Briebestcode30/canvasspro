@@ -43,6 +43,12 @@
   font-weight: 800;
 }
 
+.route-list__people-count {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .route-list__position {
   color: #64748b;
   font-size: 13px;
@@ -119,11 +125,11 @@
 .route-list__filter select {
   flex: 1;
   min-width: 0;
-  padding: 11px 14px;
+  padding: 11px 38px 11px 14px;
   border: 1px solid #cbd5e1;
   border-radius: 999px;
   outline: none;
-  background: #ffffff;
+  background-color: #ffffff;
   color: #1e293b;
   font-size: 15px;
   cursor: pointer;
@@ -212,7 +218,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
 }
 
 .route-list__address {
@@ -221,12 +227,25 @@
   font-weight: 800;
 }
 
+.route-list__people {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .route-list__person {
   color: #475569;
   font-size: 13px;
+  line-height: 1.3;
+}
+
+.route-list__person + .route-list__person {
+  padding-top: 3px;
+  border-top: 1px solid #e2e8f0;
 }
 
 .route-list__status {
+  margin-top: 2px;
   color: #64748b;
   font-size: 12px;
   font-weight: 700;

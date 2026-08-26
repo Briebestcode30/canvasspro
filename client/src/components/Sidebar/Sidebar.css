@@ -1,14 +1,14 @@
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 30px;
-  position: sticky;
-  top: 0;
+  border-right: 1px solid #e2e8f0;
+  background: #ffffff;
 }
 
 .sidebar__logo {
@@ -42,7 +42,9 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .sidebar__item svg {
@@ -63,31 +65,70 @@
   color: #ffffff;
 }
 
-.sidebar__emergency {
+.sidebar__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar__emergency,
+.sidebar__logout {
   width: 100%;
+  min-height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  border: none;
-  border-radius: 999px;
-  background: #dc2626;
-  color: #ffffff;
-  font-size: 16px;
+  gap: 9px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sidebar__emergency {
+  border: 2px solid #dc2626;
+  background: #dc2626;
+  color: #ffffff;
 }
 
 .sidebar__emergency:hover {
+  border-color: #b91c1c;
   background: #b91c1c;
+}
+
+.sidebar__logout {
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.sidebar__logout:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.sidebar__emergency:active,
+.sidebar__logout:active {
+  transform: scale(0.98);
+}
+
+.sidebar__emergency svg,
+.sidebar__logout svg {
+  flex-shrink: 0;
 }
 
 @media (prefers-color-scheme: dark) {
   .sidebar {
-    background: #0f172a;
     border-right-color: #334155;
+    background: #0f172a;
   }
 
   .sidebar__logo h2 {
@@ -107,6 +148,18 @@
     background: #2563eb;
     color: #ffffff;
   }
+
+  .sidebar__logout {
+    border-color: #475569;
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+
+  .sidebar__logout:hover {
+    border-color: #60a5fa;
+    background: #1e293b;
+    color: #93c5fd;
+  }
 }
 
 @media (max-width: 900px) {
@@ -120,7 +173,12 @@
   }
 
   .sidebar__item {
-    font-size: 14px;
     padding: 13px 14px;
+    font-size: 14px;
+  }
+
+  .sidebar__emergency,
+  .sidebar__logout {
+    font-size: 13px;
   }
 }

@@ -1,7 +1,12 @@
 import { useState } from "react";
 import "./VisitOutcome.css";
 
-function VisitOutcome({ outcome, knocked, redDoor, onOutcomeChange }) {
+function VisitOutcome({
+  outcome = "",
+  knocked = false,
+  redDoor = false,
+  onOutcomeChange,
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   const outcomes = [
@@ -15,11 +20,18 @@ function VisitOutcome({ outcome, knocked, redDoor, onOutcomeChange }) {
   ];
 
   function handleOutcomeChange(selectedOutcome) {
-    const nextKnocked = selectedOutcome === "Inaccessible" ? false : knocked;
+    if (outcome === selectedOutcome) {
+      onOutcomeChange({
+        outcome: "",
+        knocked,
+      });
+
+      return;
+    }
 
     onOutcomeChange({
       outcome: selectedOutcome,
-      knocked: nextKnocked,
+      knocked: selectedOutcome === "Inaccessible" ? false : knocked,
     });
   }
 
@@ -29,7 +41,7 @@ function VisitOutcome({ outcome, knocked, redDoor, onOutcomeChange }) {
         type="button"
         className="visit-outcome__button"
         disabled={redDoor}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((current) => !current)}
       >
         I couldn't reach this contact
       </button>
@@ -43,7 +55,20 @@ function VisitOutcome({ outcome, knocked, redDoor, onOutcomeChange }) {
       {!redDoor && isOpen && (
         <div className="visit-outcome__options">
           {outcomes.map((item) => (
-            <label key={item}>
+            <label
+              key={item}
+              className={
+                outcome === item
+                  ? "visit-outcome__option visit-outcome__option--selected"
+                  : "visit-outcome__option"
+              }
+              onClick={(event) => {
+                if (outcome === item) {
+                  event.preventDefault();
+                  handleOutcomeChange(item);
+                }
+              }}
+            >
               <input
                 type="radio"
                 name="visit-outcome"

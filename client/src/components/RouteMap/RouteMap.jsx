@@ -26,6 +26,22 @@ function MapController({ property }) {
   return null;
 }
 
+function LocationController({ userLocation, focusUserLocation }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!userLocation || !focusUserLocation) {
+      return;
+    }
+
+    map.flyTo([userLocation.latitude, userLocation.longitude], 18, {
+      duration: 0.8,
+    });
+  }, [userLocation, focusUserLocation, map]);
+
+  return null;
+}
+
 function createNumberedIcon(number, isActive) {
   return L.divIcon({
     className: "route-map__custom-icon",
@@ -42,18 +58,40 @@ function createNumberedIcon(number, isActive) {
   });
 }
 
+function createUserLocationIcon() {
+  return L.divIcon({
+    className: "route-map__user-location-icon",
+    html: `
+      <div class="route-map__user-location-marker">
+        <div class="route-map__user-location-dot"></div>
+      </div>
+    `,
+    iconSize: [34, 34],
+    iconAnchor: [17, 17],
+    popupAnchor: [0, -18],
+  });
+}
+
 function RouteMap({ properties, currentIndex, onSelectProperty }) {
   const [walkingRoute, setWalkingRoute] = useState([]);
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState(null);
   const [routeError, setRouteError] = useState("");
 
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState("");
+  const [isLocating, setIsLocating] = useState(false);
+  const [focusUserLocation, setFocusUserLocation] = useState(false);
+
   const currentProperty = properties[currentIndex];
 
-  const fallbackRoute = properties.map((property) => [
-    property.latitude,
-    property.longitude,
-  ]);
+  const fallbackRoute = properties
+    .filter(
+      (property) =>
+        Number.isFinite(property.latitude) &&
+        Number.isFinite(property.longitude),
+    )
+    .map((property) => [property.latitude, property.longitude]);
 
   useEffect(() => {
     async function loadWalkingRoute() {
@@ -77,7 +115,6 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         const summary = feature.properties?.summary;
 
         setDistance(summary?.distance ?? null);
-
         setDuration(summary?.duration ?? null);
       } catch (error) {
         console.error(error);
@@ -99,6 +136,92 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
       setRouteError("");
     }
   }, [properties]);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationError("Location services are not supported by this browser.");
+
+      return;
+    }
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+        });
+
+        setLocationError("");
+        setIsLocating(false);
+      },
+      (error) => {
+        console.error("Location error:", error);
+
+        setIsLocating(false);
+
+        if (error.code === error.PERMISSION_DENIED) {
+          setLocationError(
+            "Location permission was denied. Allow location access in your browser to show your position.",
+          );
+        } else {
+          setLocationError("Your current location could not be loaded.");
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 15000,
+      },
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, []);
+
+  function handleLocateUser() {
+    if (!navigator.geolocation) {
+      setLocationError("Location services are not supported by this browser.");
+
+      return;
+    }
+
+    setIsLocating(true);
+    setFocusUserLocation(false);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+        });
+
+        setLocationError("");
+        setIsLocating(false);
+        setFocusUserLocation(true);
+      },
+      (error) => {
+        console.error("Location error:", error);
+
+        setIsLocating(false);
+
+        if (error.code === error.PERMISSION_DENIED) {
+          setLocationError(
+            "Location permission was denied. Allow location access in your browser to show your position.",
+          );
+        } else {
+          setLocationError("Your current location could not be loaded.");
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 15000,
+      },
+    );
+  }
 
   if (!currentProperty) {
     return (
@@ -137,7 +260,27 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         {durationMinutes && <span>{durationMinutes} min</span>}
       </div>
 
+      <div className="route-map__location-controls">
+        <button
+          type="button"
+          className="route-map__location-button"
+          onClick={handleLocateUser}
+          disabled={isLocating}
+          aria-label="Show my current location"
+        >
+          <span className="route-map__location-arrow">➤</span>
+
+          <span>{isLocating ? "Finding You..." : "My Location"}</span>
+        </button>
+
+        {userLocation && (
+          <span className="route-map__location-status">Location active</span>
+        )}
+      </div>
+
       {routeError && <p className="route-map__warning">{routeError}</p>}
+
+      {locationError && <p className="route-map__warning">{locationError}</p>}
 
       <MapContainer
         center={[currentProperty.latitude, currentProperty.longitude]}
@@ -145,6 +288,11 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         className="route-map__map"
       >
         <MapController property={currentProperty} />
+
+        <LocationController
+          userLocation={userLocation}
+          focusUserLocation={focusUserLocation}
+        />
 
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
@@ -159,6 +307,20 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
             opacity: 0.85,
           }}
         />
+
+        {userLocation && (
+          <Marker
+            position={[userLocation.latitude, userLocation.longitude]}
+            icon={createUserLocationIcon()}
+            zIndexOffset={1000}
+          >
+            <Popup>
+              <strong>Your Location</strong>
+              <br />
+              Accuracy: approximately {Math.round(userLocation.accuracy)} meters
+            </Popup>
+          </Marker>
+        )}
 
         {properties.map((property, index) => {
           const people = Array.isArray(property.people) ? property.people : [];

@@ -18,54 +18,62 @@ function PropertyCard({
   onNext,
   onSaveProperty,
 }) {
-  const currentPerson = property.people?.[selectedPersonIndex];
+  const currentPerson = property?.people?.[selectedPersonIndex];
 
-  const redDoor = property.redDoor || false;
+  const redDoor = property?.redDoor || false;
 
-  const [phone, setPhone] = useState(currentPerson?.phone || "");
-  const [email, setEmail] = useState(currentPerson?.email || "");
-  const [outcome, setOutcome] = useState(currentPerson?.outcome || "");
-  const [knocked, setKnocked] = useState(currentPerson?.knocked || false);
-  const [notes, setNotes] = useState(currentPerson?.notes || "");
-
-  const [importantIssue, setImportantIssue] = useState(
-    currentPerson?.importantIssue || "",
-  );
-
-  const [industries, setIndustries] = useState(currentPerson?.industries || []);
-
-  const [ctaSigned, setCtaSigned] = useState(currentPerson?.ctaSigned ?? null);
-
-  const [waMembershipJoin, setWaMembershipJoin] = useState(
-    currentPerson?.waMembershipJoin || false,
-  );
-
-  const [textMessageOk, setTextMessageOk] = useState(
-    currentPerson?.textMessageOk || false,
-  );
-
-  const [hotContact, setHotContact] = useState(
-    currentPerson?.hotContact || false,
-  );
-
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [outcome, setOutcome] = useState("");
+  const [knocked, setKnocked] = useState(false);
+  const [notes, setNotes] = useState("");
+  const [importantIssue, setImportantIssue] = useState("");
+  const [industries, setIndustries] = useState([]);
+  const [ctaSigned, setCtaSigned] = useState(null);
+  const [waMembershipJoin, setWaMembershipJoin] = useState(false);
+  const [textMessageOk, setTextMessageOk] = useState(false);
+  const [hotContact, setHotContact] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
-    const person = property.people?.[selectedPersonIndex];
+    if (!currentPerson) {
+      setPhone("");
+      setEmail("");
+      setOutcome("");
+      setKnocked(false);
+      setNotes("");
+      setImportantIssue("");
+      setIndustries([]);
+      setCtaSigned(null);
+      setWaMembershipJoin(false);
+      setTextMessageOk(false);
+      setHotContact(false);
+      setSaveMessage("");
 
-    setPhone(person?.phone || "");
-    setEmail(person?.email || "");
-    setOutcome(person?.outcome || "");
-    setKnocked(person?.knocked || false);
-    setNotes(person?.notes || "");
-    setImportantIssue(person?.importantIssue || "");
-    setIndustries(person?.industries || []);
-    setCtaSigned(person?.ctaSigned ?? null);
-    setWaMembershipJoin(person?.waMembershipJoin || false);
-    setTextMessageOk(person?.textMessageOk || false);
-    setHotContact(person?.hotContact || false);
+      return;
+    }
+
+    setPhone(currentPerson.phone || "");
+    setEmail(currentPerson.email || "");
+    setOutcome(currentPerson.outcome || "");
+    setKnocked(Boolean(currentPerson.knocked));
+    setNotes(currentPerson.notes || "");
+    setImportantIssue(currentPerson.importantIssue || "");
+
+    setIndustries(
+      Array.isArray(currentPerson.industries) ? currentPerson.industries : [],
+    );
+
+    setCtaSigned(currentPerson.ctaSigned ?? null);
+
+    setWaMembershipJoin(Boolean(currentPerson.waMembershipJoin));
+
+    setTextMessageOk(Boolean(currentPerson.textMessageOk));
+
+    setHotContact(Boolean(currentPerson.hotContact));
+
     setSaveMessage("");
-  }, [property, selectedPersonIndex]);
+  }, [property.id, selectedPersonIndex, currentPerson?.id]);
 
   function handleOutcomeChange(data) {
     setOutcome(data.outcome);
@@ -79,8 +87,9 @@ function PropertyCard({
 
     const updatedPerson = {
       ...currentPerson,
-      phone,
-      email,
+
+      phone: phone.trim(),
+      email: email.trim(),
       outcome,
       knocked,
       notes,
@@ -92,29 +101,41 @@ function PropertyCard({
       hotContact,
     };
 
+    const updatedPeople = property.people.map((person, index) => {
+      if (index === selectedPersonIndex) {
+        return updatedPerson;
+      }
+
+      return person;
+    });
+
     return {
       ...property,
-      people: property.people.map((person) =>
-        person.id === currentPerson.id ? updatedPerson : person,
-      ),
+      people: updatedPeople,
     };
   }
 
   function handleSave() {
+    if (!currentPerson) {
+      return;
+    }
+
     const updatedProperty = createUpdatedProperty();
 
     onSaveProperty(updatedProperty);
 
-    setSaveMessage("Visit saved successfully.");
+    setSaveMessage("Contact saved successfully.");
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       setSaveMessage("");
     }, 2500);
-
-    console.log("Visit saved:", updatedProperty);
   }
 
   function handleSaveAndNext() {
+    if (!currentPerson) {
+      return;
+    }
+
     const updatedProperty = createUpdatedProperty();
 
     onSaveProperty(updatedProperty);
@@ -122,6 +143,10 @@ function PropertyCard({
     if (currentIndex < totalProperties - 1) {
       onNext();
     }
+  }
+
+  if (!property) {
+    return null;
   }
 
   if (!currentPerson) {

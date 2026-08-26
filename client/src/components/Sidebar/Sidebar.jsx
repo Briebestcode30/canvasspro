@@ -7,16 +7,25 @@ import {
   UsersRound,
   Settings,
   ShieldAlert,
+  LogOut,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ onLogout }) {
   function handleEmergencyCall() {
     const confirmed = window.confirm("Call 911 emergency services?");
 
     if (confirmed) {
       window.location.href = "tel:911";
+    }
+  }
+
+  function handleLogout() {
+    const confirmed = window.confirm("Are you sure you want to log out?");
+
+    if (confirmed && onLogout) {
+      onLogout();
     }
   }
 
@@ -36,6 +45,7 @@ function Sidebar() {
             }
           >
             <LayoutDashboard size={20} />
+
             <span>Dashboard</span>
           </NavLink>
 
@@ -46,6 +56,7 @@ function Sidebar() {
             }
           >
             <Map size={20} />
+
             <span>Routes</span>
           </NavLink>
 
@@ -56,6 +67,7 @@ function Sidebar() {
             }
           >
             <ChartNoAxesColumnIncreasing size={20} />
+
             <span>Progress</span>
           </NavLink>
 
@@ -66,6 +78,7 @@ function Sidebar() {
             }
           >
             <UsersRound size={20} />
+
             <span>Addresses / People</span>
           </NavLink>
 
@@ -76,19 +89,33 @@ function Sidebar() {
             }
           >
             <Settings size={20} />
+
             <span>Settings</span>
           </NavLink>
         </nav>
       </div>
 
-      <button
-        type="button"
-        className="sidebar__emergency"
-        onClick={handleEmergencyCall}
-      >
-        <ShieldAlert size={20} />
-        <span>Emergency 911</span>
-      </button>
+      <div className="sidebar__bottom">
+        <button
+          type="button"
+          className="sidebar__emergency"
+          onClick={handleEmergencyCall}
+        >
+          <ShieldAlert size={20} />
+
+          <span>Emergency 911</span>
+        </button>
+
+        <button
+          type="button"
+          className="sidebar__logout"
+          onClick={handleLogout}
+        >
+          <LogOut size={20} />
+
+          <span>Log Out</span>
+        </button>
+      </div>
     </aside>
   );
 }

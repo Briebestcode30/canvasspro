@@ -32,8 +32,12 @@ function HomeownerSurvey({
 
   const selectedIndustry = industries[0] || "";
 
+  function handleIssueChange(issue) {
+    onIssueChange(importantIssue === issue ? "" : issue);
+  }
+
   function handleIndustryChange(industry) {
-    onIndustriesChange([industry]);
+    onIndustriesChange(selectedIndustry === industry ? [] : [industry]);
   }
 
   return (
@@ -41,17 +45,28 @@ function HomeownerSurvey({
       <div className="homeowner-survey__section">
         <h3>What issue is most important to you?</h3>
 
-        <p className="homeowner-survey__helper">Select one.</p>
+        <p className="homeowner-survey__helper">
+          Select one. Click again to clear.
+        </p>
 
         <div className="homeowner-survey__issues">
           {issues.map((issue) => (
-            <label key={issue} className="homeowner-survey__option">
+            <label
+              key={issue}
+              className="homeowner-survey__option"
+              onClick={(event) => {
+                if (importantIssue === issue) {
+                  event.preventDefault();
+                  handleIssueChange(issue);
+                }
+              }}
+            >
               <input
                 type="radio"
                 name="importantIssue"
                 value={issue}
                 checked={importantIssue === issue}
-                onChange={() => onIssueChange(issue)}
+                onChange={() => handleIssueChange(issue)}
               />
 
               <span>{issue}</span>
@@ -63,11 +78,22 @@ function HomeownerSurvey({
       <div className="homeowner-survey__section">
         <h3>What industry do you work in?</h3>
 
-        <p className="homeowner-survey__helper">Select one.</p>
+        <p className="homeowner-survey__helper">
+          Select one. Click again to clear.
+        </p>
 
         <div className="homeowner-survey__industries">
           {industryOptions.map((industry) => (
-            <label key={industry} className="homeowner-survey__option">
+            <label
+              key={industry}
+              className="homeowner-survey__option"
+              onClick={(event) => {
+                if (selectedIndustry === industry) {
+                  event.preventDefault();
+                  handleIndustryChange(industry);
+                }
+              }}
+            >
               <input
                 type="radio"
                 name="industry"

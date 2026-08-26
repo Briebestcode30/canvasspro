@@ -13,9 +13,14 @@ function Progress({ properties = [] }) {
     (person) =>
       person.knocked ||
       person.outcome ||
-      person.ctaSigned === true ||
+      person.ctaSigned !== null ||
       person.email?.trim() ||
-      person.phone?.trim(),
+      person.phone?.trim() ||
+      person.waMembershipJoin === true ||
+      person.textMessageOk === true ||
+      person.hotContact === true ||
+      Boolean(person.importantIssue) ||
+      (Array.isArray(person.industries) && person.industries.length > 0),
   ).length;
 
   const waMembershipJoinCount = people.filter(
