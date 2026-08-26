@@ -1,42 +1,31 @@
-.primary-button,
 .secondary-button,
 .danger-button,
 .save-next-button {
   width: 100%;
   min-height: 54px;
-  padding: 14px 20px;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.2;
-
   display: flex;
   align-items: center;
   justify-content: center;
 
+  padding: 14px 20px;
+
+  border-radius: 999px;
+
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
   text-align: center;
+
   cursor: pointer;
 
   transition:
-    background 0.2s ease,
+    background-color 0.2s ease,
     border-color 0.2s ease,
+    color 0.2s ease,
     transform 0.2s ease,
     opacity 0.2s ease;
 }
 
-/* Save */
-.primary-button {
-  border: 2px solid #2563eb;
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.primary-button:hover:not(:disabled) {
-  border-color: #1d4ed8;
-  background: #1d4ed8;
-}
-
-/* Previous / Next */
 .secondary-button {
   border: 2px solid #2563eb;
   background: #ffffff;
@@ -44,10 +33,11 @@
 }
 
 .secondary-button:hover:not(:disabled) {
+  border-color: #2563eb;
   background: #eff6ff;
+  color: #1d4ed8;
 }
 
-/* Save & Next */
 .save-next-button {
   border: 2px solid #1e3a8a;
   background: #1e3a8a;
@@ -59,7 +49,6 @@
   background: #172554;
 }
 
-/* Emergency */
 .danger-button {
   border: 2px solid #dc2626;
   background: #dc2626;
@@ -71,20 +60,25 @@
   background: #b91c1c;
 }
 
-/* Button press */
-.primary-button:active:not(:disabled),
 .secondary-button:active:not(:disabled),
 .danger-button:active:not(:disabled),
 .save-next-button:active:not(:disabled) {
   transform: scale(0.97);
 }
 
-/* Disabled */
-.primary-button:disabled,
 .secondary-button:disabled,
 .danger-button:disabled,
 .save-next-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+@media (max-width: 600px) {
+  .secondary-button,
+  .danger-button,
+  .save-next-button {
+    min-height: 50px;
+    font-size: 15px;
+  }
 }

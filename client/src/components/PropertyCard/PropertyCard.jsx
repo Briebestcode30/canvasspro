@@ -6,7 +6,6 @@ import VisitOutcome from "../VisitOutcome/VisitOutcome";
 import Notes from "../Notes/Notes";
 import SaveButton from "../Buttons/SaveButton";
 import PreviousHomeButton from "../Buttons/PreviousHomeButton";
-import NextHomeButton from "../Buttons/NextHomeButton";
 import EmergencyButton from "../Buttons/EmergencyButton";
 
 function PropertyCard({
@@ -19,7 +18,6 @@ function PropertyCard({
   onSaveProperty,
 }) {
   const currentPerson = property?.people?.[selectedPersonIndex];
-
   const redDoor = property?.redDoor || false;
 
   const [phone, setPhone] = useState("");
@@ -33,7 +31,6 @@ function PropertyCard({
   const [waMembershipJoin, setWaMembershipJoin] = useState(false);
   const [textMessageOk, setTextMessageOk] = useState(false);
   const [hotContact, setHotContact] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
     if (!currentPerson) {
@@ -48,7 +45,6 @@ function PropertyCard({
       setWaMembershipJoin(false);
       setTextMessageOk(false);
       setHotContact(false);
-      setSaveMessage("");
 
       return;
     }
@@ -65,15 +61,10 @@ function PropertyCard({
     );
 
     setCtaSigned(currentPerson.ctaSigned ?? null);
-
     setWaMembershipJoin(Boolean(currentPerson.waMembershipJoin));
-
     setTextMessageOk(Boolean(currentPerson.textMessageOk));
-
     setHotContact(Boolean(currentPerson.hotContact));
-
-    setSaveMessage("");
-  }, [property.id, selectedPersonIndex, currentPerson?.id]);
+  }, [property?.id, selectedPersonIndex, currentPerson?.id]);
 
   function handleOutcomeChange(data) {
     setOutcome(data.outcome);
@@ -87,7 +78,6 @@ function PropertyCard({
 
     const updatedPerson = {
       ...currentPerson,
-
       phone: phone.trim(),
       email: email.trim(),
       outcome,
@@ -113,22 +103,6 @@ function PropertyCard({
       ...property,
       people: updatedPeople,
     };
-  }
-
-  function handleSave() {
-    if (!currentPerson) {
-      return;
-    }
-
-    const updatedProperty = createUpdatedProperty();
-
-    onSaveProperty(updatedProperty);
-
-    setSaveMessage("Contact saved successfully.");
-
-    window.setTimeout(() => {
-      setSaveMessage("");
-    }, 2500);
   }
 
   function handleSaveAndNext() {
@@ -339,28 +313,20 @@ function PropertyCard({
       <Notes value={notes} onChange={setNotes} />
 
       <div className="property-card__actions">
-        <SaveButton
-          onSave={handleSave}
-          onSaveAndNext={handleSaveAndNext}
-          disableSaveAndNext={currentIndex === totalProperties - 1}
-        />
+        <div className="property-card__actions-left">
+          <PreviousHomeButton
+            onPrevious={onPrevious}
+            disabled={currentIndex === 0}
+          />
 
-        <PreviousHomeButton
-          onPrevious={onPrevious}
-          disabled={currentIndex === 0}
-        />
-
-        <NextHomeButton
-          onNext={onNext}
-          disabled={currentIndex === totalProperties - 1}
-        />
+          <SaveButton
+            onSaveAndNext={handleSaveAndNext}
+            disableSaveAndNext={currentIndex === totalProperties - 1}
+          />
+        </div>
 
         <EmergencyButton />
       </div>
-
-      {saveMessage && (
-        <p className="property-card__save-message">{saveMessage}</p>
-      )}
     </section>
   );
 }

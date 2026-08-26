@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import "./App.css";
 
@@ -19,50 +19,83 @@ import initialProperties from "./data/properties";
 import { optimizeRoute } from "./utils/routeUtils";
 import { geocodeAddress } from "./services/routeService";
 
+const STORAGE_KEYS = {
+  properties: "canvassnow-properties",
+  shiftNotes: "canvassnow-shift-notes",
+  hourlyAnalysis: "canvassnow-hourly-analysis",
+  profile: "canvassnow-profile",
+};
+
+const defaultHourlyAnalysis = {
+  "3:00 PM": {
+    plusOne: "",
+    delta: "",
+    plusTwo: "",
+  },
+  "4:00 PM": {
+    plusOne: "",
+    delta: "",
+    plusTwo: "",
+  },
+  "5:00 PM": {
+    plusOne: "",
+    delta: "",
+    plusTwo: "",
+  },
+  "6:00 PM": {
+    plusOne: "",
+    delta: "",
+    plusTwo: "",
+  },
+  "7:00 PM": {
+    plusOne: "",
+    delta: "",
+    plusTwo: "",
+  },
+  "8:00 PM": {
+    plusOne: "",
+    delta: "",
+    plusTwo: "",
+  },
+};
+
+function loadStoredValue(key, fallbackValue) {
+  try {
+    const storedValue = window.localStorage.getItem(key);
+
+    if (!storedValue) {
+      return fallbackValue;
+    }
+
+    return JSON.parse(storedValue);
+  } catch (error) {
+    console.error(`Could not load ${key}:`, error);
+
+    return fallbackValue;
+  }
+}
+
 function App() {
-  const [properties, setProperties] = useState(initialProperties);
+  const [properties, setProperties] = useState(() =>
+    loadStoredValue(STORAGE_KEYS.properties, initialProperties),
+  );
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentPersonIndex, setCurrentPersonIndex] = useState(0);
 
   const [showAddPersonForm, setShowAddPersonForm] = useState(false);
+
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
 
   const [currentUser, setCurrentUser] = useState(null);
 
-  const [shiftNotes, setShiftNotes] = useState("");
+  const [shiftNotes, setShiftNotes] = useState(() =>
+    loadStoredValue(STORAGE_KEYS.shiftNotes, ""),
+  );
 
-  const [hourlyAnalysis, setHourlyAnalysis] = useState({
-    "3:00 PM": {
-      plusOne: "",
-      delta: "",
-      plusTwo: "",
-    },
-    "4:00 PM": {
-      plusOne: "",
-      delta: "",
-      plusTwo: "",
-    },
-    "5:00 PM": {
-      plusOne: "",
-      delta: "",
-      plusTwo: "",
-    },
-    "6:00 PM": {
-      plusOne: "",
-      delta: "",
-      plusTwo: "",
-    },
-    "7:00 PM": {
-      plusOne: "",
-      delta: "",
-      plusTwo: "",
-    },
-    "8:00 PM": {
-      plusOne: "",
-      delta: "",
-      plusTwo: "",
-    },
-  });
+  const [hourlyAnalysis, setHourlyAnalysis] = useState(() =>
+    loadStoredValue(STORAGE_KEYS.hourlyAnalysis, defaultHourlyAnalysis),
+  );
 
   const isLoggedIn = Boolean(currentUser);
 
@@ -77,6 +110,49 @@ function App() {
     : [];
 
   const currentPerson = currentPeople[currentPersonIndex];
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEYS.properties,
+        JSON.stringify(properties),
+      );
+    } catch (error) {
+      console.error("Could not save canvassing properties:", error);
+    }
+  }, [properties]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEYS.shiftNotes,
+        JSON.stringify(shiftNotes),
+      );
+    } catch (error) {
+      console.error("Could not save shift notes:", error);
+    }
+  }, [shiftNotes]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEYS.hourlyAnalysis,
+        JSON.stringify(hourlyAnalysis),
+      );
+    } catch (error) {
+      console.error("Could not save hourly analysis:", error);
+    }
+  }, [hourlyAnalysis]);
+
+  useEffect(() => {
+    if (
+      currentIndex >= canvassableProperties.length &&
+      canvassableProperties.length > 0
+    ) {
+      setCurrentIndex(canvassableProperties.length - 1);
+      setCurrentPersonIndex(0);
+    }
+  }, [canvassableProperties.length, currentIndex]);
 
   function isPersonVisited(person) {
     return Boolean(
@@ -98,11 +174,23 @@ function App() {
   }
 
   function handleLogin({ email }) {
+    const savedProfile = loadStoredValue(STORAGE_KEYS.profile, null);
+
+    if (
+      savedProfile &&
+      savedProfile.email?.toLowerCase() === email.trim().toLowerCase()
+    ) {
+      setCurrentUser(savedProfile);
+
+      return;
+    }
+
     setCurrentUser({
       fullName: "",
-      email,
+      email: email.trim(),
       position: "Canvasser",
       organizationRole: "Canvasser",
+      licenseImage: "",
     });
   }
 
@@ -116,6 +204,17 @@ function App() {
 
   function handleUpdateUser(updatedUser) {
     setCurrentUser(updatedUser);
+
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEYS.profile,
+        JSON.stringify(updatedUser),
+      );
+    } catch (error) {
+      console.error("Could not save user profile:", error);
+
+      window.alert("The profile could not be saved on this device.");
+    }
   }
 
   function handleSelectProperty(index) {
@@ -132,6 +231,7 @@ function App() {
   function handleNextHome() {
     if (currentIndex < canvassableProperties.length - 1) {
       setCurrentIndex((current) => current + 1);
+
       setCurrentPersonIndex(0);
       setShowAddPersonForm(false);
       setShowAddAddressForm(false);
@@ -141,6 +241,7 @@ function App() {
   function handlePreviousHome() {
     if (currentIndex > 0) {
       setCurrentIndex((current) => current - 1);
+
       setCurrentPersonIndex(0);
       setShowAddPersonForm(false);
       setShowAddAddressForm(false);
@@ -201,6 +302,7 @@ function App() {
     );
 
     setCurrentPersonIndex(newPersonIndex);
+
     setShowAddPersonForm(false);
   }
 
@@ -241,6 +343,7 @@ function App() {
 
       setCurrentIndex(newIndex);
       setCurrentPersonIndex(0);
+
       setShowAddAddressForm(false);
       setShowAddPersonForm(false);
     } catch (error) {
@@ -315,6 +418,7 @@ function App() {
               onClick={() => handleSelectPerson(index)}
             >
               <span>{person.name}</span>
+
               <small>Age {person.age}</small>
             </button>
           ))}
@@ -415,7 +519,7 @@ function App() {
 
                       <input
                         type="text"
-                        value={hourlyAnalysis[time].plusOne}
+                        value={hourlyAnalysis[time]?.plusOne || ""}
                         onChange={(event) =>
                           handleAnalysisChange(
                             time,
@@ -432,7 +536,7 @@ function App() {
 
                       <input
                         type="text"
-                        value={hourlyAnalysis[time].delta}
+                        value={hourlyAnalysis[time]?.delta || ""}
                         onChange={(event) =>
                           handleAnalysisChange(
                             time,
@@ -449,7 +553,7 @@ function App() {
 
                       <input
                         type="text"
-                        value={hourlyAnalysis[time].plusTwo}
+                        value={hourlyAnalysis[time]?.plusTwo || ""}
                         onChange={(event) =>
                           handleAnalysisChange(
                             time,
@@ -483,8 +587,11 @@ function App() {
 
         <nav className="route-page-links">
           <NavLink to="/">Dashboard</NavLink>
+
           <NavLink to="/progress">Progress</NavLink>
+
           <NavLink to="/addresses">Addresses / People</NavLink>
+
           <NavLink to="/settings">Settings</NavLink>
         </nav>
 
@@ -604,7 +711,9 @@ function App() {
 
         <Routes>
           <Route path="/" element={<DashboardPage />} />
+
           <Route path="/routes" element={<RoutesPage />} />
+
           <Route path="/progress" element={<ProgressPage />} />
 
           <Route path="/addresses" element={<AddressesPeoplePage />} />
@@ -625,6 +734,7 @@ function App() {
             element={
               <div className="page-heading">
                 <h1>Page Not Found</h1>
+
                 <p>The page you requested does not exist.</p>
               </div>
             }

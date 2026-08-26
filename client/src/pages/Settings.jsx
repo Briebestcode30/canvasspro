@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Settings.css";
 
 function Settings({ isLoggedIn = true, currentUser = null, onUpdateUser }) {
@@ -20,13 +20,21 @@ function Settings({ isLoggedIn = true, currentUser = null, onUpdateUser }) {
   const [showMapMarkers, setShowMapMarkers] = useState(true);
   const [confirmNextHome, setConfirmNextHome] = useState(false);
 
+  const [licenseImage, setLicenseImage] = useState(
+    currentUser?.licenseImage || "",
+  );
+
   const [saveMessage, setSaveMessage] = useState("");
+  const [licenseMessage, setLicenseMessage] = useState("");
+
+  const licenseInputRef = useRef(null);
 
   useEffect(() => {
     setFullName(currentUser?.fullName || "");
     setEmail(currentUser?.email || "");
     setPosition(currentUser?.position || "Canvasser");
     setOrganizationRole(currentUser?.organizationRole || "Canvasser");
+    setLicenseImage(currentUser?.licenseImage || "");
   }, [currentUser]);
 
   function handleSaveProfile(event) {
@@ -42,14 +50,81 @@ function Settings({ isLoggedIn = true, currentUser = null, onUpdateUser }) {
       email: email.trim(),
       position,
       organizationRole,
+      licenseImage,
     });
 
     setPassword("");
     setSaveMessage("Profile updated.");
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       setSaveMessage("");
     }, 2500);
+  }
+
+  function handleLicenseUpload(event) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setLicenseMessage("Please select an image file.");
+      return;
+    }
+
+    const maxFileSize = 5 * 1024 * 1024;
+
+    if (file.size > maxFileSize) {
+      setLicenseMessage("Please choose an image smaller than 5 MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const imageData = reader.result;
+
+      setLicenseImage(imageData);
+      setLicenseMessage("License image ready to save.");
+
+      if (isLoggedIn && onUpdateUser) {
+        onUpdateUser({
+          ...currentUser,
+          fullName: fullName.trim(),
+          email: email.trim(),
+          position,
+          organizationRole,
+          licenseImage: imageData,
+        });
+      }
+    };
+
+    reader.onerror = () => {
+      setLicenseMessage("The license image could not be loaded.");
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function handleRemoveLicense() {
+    setLicenseImage("");
+    setLicenseMessage("License image removed.");
+
+    if (licenseInputRef.current) {
+      licenseInputRef.current.value = "";
+    }
+
+    if (isLoggedIn && onUpdateUser) {
+      onUpdateUser({
+        ...currentUser,
+        fullName: fullName.trim(),
+        email: email.trim(),
+        position,
+        organizationRole,
+        licenseImage: "",
+      });
+    }
   }
 
   return (
@@ -177,6 +252,61 @@ function Settings({ isLoggedIn = true, currentUser = null, onUpdateUser }) {
             <p className="settings-account-position">{position}</p>
 
             <p className="settings-role">{organizationRole}</p>
+          </section>
+        )}
+
+        {isLoggedIn && currentUser && (
+          <section className="settings-card settings-license">
+            <h2>Canvasser License</h2>
+
+            <p className="settings-license__helper">
+              Upload a photo of your license to canvass from this device.
+            </p>
+
+            {licenseImage ? (
+              <div className="settings-license__preview">
+                <img src={licenseImage} alt="Canvasser license" />
+              </div>
+            ) : (
+              <div className="settings-license__empty">
+                No license image uploaded.
+              </div>
+            )}
+
+            <input
+              ref={licenseInputRef}
+              id="canvasser-license"
+              className="settings-license__input"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleLicenseUpload}
+            />
+
+            <div className="settings-license__actions">
+              <label
+                htmlFor="canvasser-license"
+                className="settings-license__upload"
+              >
+                {licenseImage
+                  ? "Replace License Photo"
+                  : "Upload License Photo"}
+              </label>
+
+              {licenseImage && (
+                <button
+                  type="button"
+                  className="settings-license__remove"
+                  onClick={handleRemoveLicense}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+
+            {licenseMessage && (
+              <p className="settings-license__message">{licenseMessage}</p>
+            )}
           </section>
         )}
       </div>

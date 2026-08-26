@@ -32,11 +32,11 @@ function HomeownerSurvey({
 
   const selectedIndustry = industries[0] || "";
 
-  function handleIssueChange(issue) {
+  function handleIssueClick(issue) {
     onIssueChange(importantIssue === issue ? "" : issue);
   }
 
-  function handleIndustryChange(industry) {
+  function handleIndustryClick(industry) {
     onIndustriesChange(selectedIndustry === industry ? [] : [industry]);
   }
 
@@ -46,66 +46,84 @@ function HomeownerSurvey({
         <h3>What issue is most important to you?</h3>
 
         <p className="homeowner-survey__helper">
-          Select one. Click again to clear.
+          Select one. Select the same option again to clear.
         </p>
 
         <div className="homeowner-survey__issues">
-          {issues.map((issue) => (
-            <label
-              key={issue}
-              className="homeowner-survey__option"
-              onClick={(event) => {
-                if (importantIssue === issue) {
-                  event.preventDefault();
-                  handleIssueChange(issue);
-                }
-              }}
-            >
-              <input
-                type="radio"
-                name="importantIssue"
-                value={issue}
-                checked={importantIssue === issue}
-                onChange={() => handleIssueChange(issue)}
-              />
+          {issues.map((issue) => {
+            const isSelected = importantIssue === issue;
 
-              <span>{issue}</span>
-            </label>
-          ))}
+            return (
+              <button
+                key={issue}
+                type="button"
+                className={`homeowner-survey__option ${
+                  isSelected ? "homeowner-survey__option--selected" : ""
+                }`}
+                onClick={() => handleIssueClick(issue)}
+                aria-pressed={isSelected}
+              >
+                <span className="homeowner-survey__indicator">
+                  {isSelected ? "✓" : ""}
+                </span>
+
+                <span>{issue}</span>
+              </button>
+            );
+          })}
         </div>
+
+        {importantIssue && (
+          <button
+            type="button"
+            className="homeowner-survey__clear"
+            onClick={() => onIssueChange("")}
+          >
+            Clear Response
+          </button>
+        )}
       </div>
 
       <div className="homeowner-survey__section">
         <h3>What industry do you work in?</h3>
 
         <p className="homeowner-survey__helper">
-          Select one. Click again to clear.
+          Select one. Select the same option again to clear.
         </p>
 
         <div className="homeowner-survey__industries">
-          {industryOptions.map((industry) => (
-            <label
-              key={industry}
-              className="homeowner-survey__option"
-              onClick={(event) => {
-                if (selectedIndustry === industry) {
-                  event.preventDefault();
-                  handleIndustryChange(industry);
-                }
-              }}
-            >
-              <input
-                type="radio"
-                name="industry"
-                value={industry}
-                checked={selectedIndustry === industry}
-                onChange={() => handleIndustryChange(industry)}
-              />
+          {industryOptions.map((industry) => {
+            const isSelected = selectedIndustry === industry;
 
-              <span>{industry}</span>
-            </label>
-          ))}
+            return (
+              <button
+                key={industry}
+                type="button"
+                className={`homeowner-survey__option ${
+                  isSelected ? "homeowner-survey__option--selected" : ""
+                }`}
+                onClick={() => handleIndustryClick(industry)}
+                aria-pressed={isSelected}
+              >
+                <span className="homeowner-survey__indicator">
+                  {isSelected ? "✓" : ""}
+                </span>
+
+                <span>{industry}</span>
+              </button>
+            );
+          })}
         </div>
+
+        {selectedIndustry && (
+          <button
+            type="button"
+            className="homeowner-survey__clear"
+            onClick={() => onIndustriesChange([])}
+          >
+            Clear Response
+          </button>
+        )}
       </div>
     </section>
   );

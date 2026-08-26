@@ -19,7 +19,7 @@ function VisitOutcome({
     "Aggressive Homeowner",
   ];
 
-  function handleOutcomeChange(selectedOutcome) {
+  function handleOutcomeClick(selectedOutcome) {
     if (outcome === selectedOutcome) {
       onOutcomeChange({
         outcome: "",
@@ -32,6 +32,13 @@ function VisitOutcome({
     onOutcomeChange({
       outcome: selectedOutcome,
       knocked: selectedOutcome === "Inaccessible" ? false : knocked,
+    });
+  }
+
+  function handleClearResponse() {
+    onOutcomeChange({
+      outcome: "",
+      knocked,
     });
   }
 
@@ -54,37 +61,44 @@ function VisitOutcome({
 
       {!redDoor && isOpen && (
         <div className="visit-outcome__options">
-          {outcomes.map((item) => (
-            <label
-              key={item}
-              className={
-                outcome === item
-                  ? "visit-outcome__option visit-outcome__option--selected"
-                  : "visit-outcome__option"
-              }
-              onClick={(event) => {
-                if (outcome === item) {
-                  event.preventDefault();
-                  handleOutcomeChange(item);
-                }
-              }}
-            >
-              <input
-                type="radio"
-                name="visit-outcome"
-                value={item}
-                checked={outcome === item}
-                onChange={() => handleOutcomeChange(item)}
-              />
+          {outcomes.map((item) => {
+            const isSelected = outcome === item;
 
-              <span>{item}</span>
-            </label>
-          ))}
+            return (
+              <button
+                key={item}
+                type="button"
+                className={`visit-outcome__option ${
+                  isSelected ? "visit-outcome__option--selected" : ""
+                }`}
+                onClick={() => handleOutcomeClick(item)}
+                aria-pressed={isSelected}
+              >
+                <span className="visit-outcome__indicator">
+                  {isSelected ? "✓" : ""}
+                </span>
+
+                <span>{item}</span>
+              </button>
+            );
+          })}
+
+          {outcome && (
+            <button
+              type="button"
+              className="visit-outcome__clear"
+              onClick={handleClearResponse}
+            >
+              Clear Response
+            </button>
+          )}
         </div>
       )}
 
       {!redDoor && outcome && (
-        <p className="visit-outcome__selected">Outcome: {outcome}</p>
+        <p className="visit-outcome__selected">
+          Outcome: <strong>{outcome}</strong>
+        </p>
       )}
     </section>
   );

@@ -18,6 +18,13 @@ function MapController({ property }) {
   const map = useMap();
 
   useEffect(() => {
+    if (
+      !Number.isFinite(property?.latitude) ||
+      !Number.isFinite(property?.longitude)
+    ) {
+      return;
+    }
+
     map.flyTo([property.latitude, property.longitude], 17, {
       duration: 0.8,
     });
@@ -26,7 +33,11 @@ function MapController({ property }) {
   return null;
 }
 
-function LocationController({ userLocation, focusUserLocation }) {
+function LocationController({
+  userLocation,
+  focusUserLocation,
+  onLocationFocused,
+}) {
   const map = useMap();
 
   useEffect(() => {
@@ -37,7 +48,9 @@ function LocationController({ userLocation, focusUserLocation }) {
     map.flyTo([userLocation.latitude, userLocation.longitude], 18, {
       duration: 0.8,
     });
-  }, [userLocation, focusUserLocation, map]);
+
+    onLocationFocused();
+  }, [userLocation, focusUserLocation, onLocationFocused, map]);
 
   return null;
 }
@@ -83,22 +96,26 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
   const [isLocating, setIsLocating] = useState(false);
   const [focusUserLocation, setFocusUserLocation] = useState(false);
 
+  const [isHomesPanelOpen, setIsHomesPanelOpen] = useState(false);
+
   const currentProperty = properties[currentIndex];
 
-  const fallbackRoute = properties
-    .filter(
-      (property) =>
-        Number.isFinite(property.latitude) &&
-        Number.isFinite(property.longitude),
-    )
-    .map((property) => [property.latitude, property.longitude]);
+  const validProperties = properties.filter(
+    (property) =>
+      Number.isFinite(property.latitude) && Number.isFinite(property.longitude),
+  );
+
+  const fallbackRoute = validProperties.map((property) => [
+    property.latitude,
+    property.longitude,
+  ]);
 
   useEffect(() => {
     async function loadWalkingRoute() {
       try {
         setRouteError("");
 
-        const route = await getWalkingRoute(properties);
+        const route = await getWalkingRoute(validProperties);
 
         const feature = route.features?.[0];
 
@@ -127,7 +144,7 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
       }
     }
 
-    if (properties.length >= 2) {
+    if (validProperties.length >= 2) {
       loadWalkingRoute();
     } else {
       setWalkingRoute([]);
@@ -223,6 +240,15 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
     );
   }
 
+  function handleSelectHome(index) {
+    setFocusUserLocation(false);
+    onSelectProperty(index);
+  }
+
+  function getPeople(property) {
+    return Array.isArray(property.people) ? property.people : [];
+  }
+
   if (!currentProperty) {
     return (
       <section className="route-map">
@@ -266,7 +292,6 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
           className="route-map__location-button"
           onClick={handleLocateUser}
           disabled={isLocating}
-          aria-label="Show my current location"
         >
           <span className="route-map__location-arrow">➤</span>
 
@@ -282,85 +307,156 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
 
       {locationError && <p className="route-map__warning">{locationError}</p>}
 
-      <MapContainer
-        center={[currentProperty.latitude, currentProperty.longitude]}
-        zoom={17}
-        className="route-map__map"
-      >
-        <MapController property={currentProperty} />
+      <div className="route-map__map-shell">
+        <button
+          type="button"
+          className={`route-map__homes-toggle ${
+            isHomesPanelOpen ? "route-map__homes-toggle--open" : ""
+          }`}
+          onClick={() => setIsHomesPanelOpen((current) => !current)}
+          aria-label={isHomesPanelOpen ? "Close homes list" : "Open homes list"}
+        >
+          {isHomesPanelOpen ? "›" : "‹"}
+        </button>
 
-        <LocationController
-          userLocation={userLocation}
-          focusUserLocation={focusUserLocation}
-        />
+        <aside
+          className={`route-map__homes-panel ${
+            isHomesPanelOpen ? "route-map__homes-panel--open" : ""
+          }`}
+        >
+          <div className="route-map__homes-header">
+            <div>
+              <p>Today's Route</p>
+              <h3>Homes</h3>
+            </div>
 
-        <TileLayer
-          attribution="&copy; OpenStreetMap contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+            <span>{properties.length}</span>
+          </div>
 
-        <Polyline
-          positions={displayedRoute}
-          pathOptions={{
-            color: "#2563eb",
-            weight: 5,
-            opacity: 0.85,
-          }}
-        />
+          <div className="route-map__homes-list">
+            {properties.map((property, index) => {
+              const people = getPeople(property);
 
-        {userLocation && (
-          <Marker
-            position={[userLocation.latitude, userLocation.longitude]}
-            icon={createUserLocationIcon()}
-            zIndexOffset={1000}
-          >
-            <Popup>
-              <strong>Your Location</strong>
-              <br />
-              Accuracy: approximately {Math.round(userLocation.accuracy)} meters
-            </Popup>
-          </Marker>
-        )}
+              return (
+                <button
+                  key={property.id}
+                  type="button"
+                  className={`route-map__home-item ${
+                    index === currentIndex ? "route-map__home-item--active" : ""
+                  }`}
+                  onClick={() => handleSelectHome(index)}
+                >
+                  <span className="route-map__home-number">{index + 1}</span>
 
-        {properties.map((property, index) => {
-          const people = Array.isArray(property.people) ? property.people : [];
+                  <span className="route-map__home-details">
+                    <strong>{property.address}</strong>
 
-          const primaryPerson = people[0];
+                    {people.length > 0 && (
+                      <small>
+                        {people
+                          .map((person) => person.name)
+                          .filter(Boolean)
+                          .join(", ")}
+                      </small>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
 
-          return (
-            <Marker
-              key={property.id}
-              position={[property.latitude, property.longitude]}
-              icon={createNumberedIcon(index + 1, index === currentIndex)}
-              eventHandlers={{
-                click: () => onSelectProperty(index),
+        <MapContainer
+          center={[currentProperty.latitude, currentProperty.longitude]}
+          zoom={17}
+          className="route-map__map"
+        >
+          <MapController property={currentProperty} />
+
+          <LocationController
+            userLocation={userLocation}
+            focusUserLocation={focusUserLocation}
+            onLocationFocused={() => setFocusUserLocation(false)}
+          />
+
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          {displayedRoute.length >= 2 && (
+            <Polyline
+              positions={displayedRoute}
+              pathOptions={{
+                color: "#2563eb",
+                weight: 5,
+                opacity: 0.85,
               }}
+            />
+          )}
+
+          {userLocation && (
+            <Marker
+              position={[userLocation.latitude, userLocation.longitude]}
+              icon={createUserLocationIcon()}
+              zIndexOffset={1000}
             >
               <Popup>
-                <strong>{property.address}</strong>
+                <strong>Your Location</strong>
                 <br />
-                {primaryPerson?.name || "No person assigned"}
-                {people.length > 1 && (
-                  <>
-                    <br />
-                    {people.length} people at this address
-                  </>
-                )}
-                <br />
-                Home {index + 1} of {properties.length}
-                <br />
-                <button
-                  type="button"
-                  className="route-map__popup-button"
-                  onClick={() => onSelectProperty(index)}
-                >
-                  Select Home
-                </button>
+                Accuracy: approximately {Math.round(userLocation.accuracy)}{" "}
+                meters
               </Popup>
             </Marker>
-          );
-        })}
-      </MapContainer>
+          )}
+
+          {properties.map((property, index) => {
+            if (
+              !Number.isFinite(property.latitude) ||
+              !Number.isFinite(property.longitude)
+            ) {
+              return null;
+            }
+
+            const people = getPeople(property);
+
+            return (
+              <Marker
+                key={property.id}
+                position={[property.latitude, property.longitude]}
+                icon={createNumberedIcon(index + 1, index === currentIndex)}
+                eventHandlers={{
+                  click: () => handleSelectHome(index),
+                }}
+              >
+                <Popup>
+                  <strong>{property.address}</strong>
+                  {people.length > 0 && (
+                    <>
+                      <br />
+
+                      {people
+                        .map((person) => person.name)
+                        .filter(Boolean)
+                        .join(", ")}
+                    </>
+                  )}
+                  <br />
+                  Home {index + 1} of {properties.length}
+                  <br />
+                  <button
+                    type="button"
+                    className="route-map__popup-button"
+                    onClick={() => handleSelectHome(index)}
+                  >
+                    Select Home
+                  </button>
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      </div>
     </section>
   );
 }

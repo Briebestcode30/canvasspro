@@ -1,21 +1,15 @@
 import "./Buttons.css";
 
-function SaveButton({ onSave, onSaveAndNext, disableSaveAndNext = false }) {
+function SaveButton({ onSaveAndNext, disableSaveAndNext = false }) {
   return (
-    <>
-      <button className="primary-button" type="button" onClick={onSave}>
-        Save Visit
-      </button>
-
-      <button
-        className="save-next-button"
-        type="button"
-        onClick={onSaveAndNext}
-        disabled={disableSaveAndNext}
-      >
-        Save & Next Home
-      </button>
-    </>
+    <button
+      className="save-next-button"
+      type="button"
+      onClick={onSaveAndNext}
+      disabled={disableSaveAndNext}
+    >
+      Save & Next Home
+    </button>
   );
 }
 
