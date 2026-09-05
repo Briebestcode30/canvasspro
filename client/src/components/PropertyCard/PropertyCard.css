@@ -248,32 +248,38 @@
 }
 
 .property-card__actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(105px, 1fr);
+  align-items: stretch;
+  gap: 10px;
   margin-top: 35px;
 }
 
 .property-card__actions-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 10px;
 }
 
-.property-card__actions-left button {
-  width: auto;
-  min-width: 170px;
+.property-card__actions-left button,
+.property-card__actions > .danger-button {
+  width: 100%;
+  min-width: 0;
   min-height: 54px;
   margin: 0;
+  padding: 10px 8px;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: normal;
 }
 
 .property-card__actions > .danger-button {
-  width: auto;
-  min-width: 170px;
-  min-height: 54px;
-  margin: 0;
+  align-self: stretch;
 }
 
 .property-card__save-message {
@@ -297,6 +303,10 @@
     align-items: flex-start;
   }
 
+  .property-card__header h2 {
+    font-size: 26px;
+  }
+
   .property-card__person-summary {
     grid-template-columns: 1fr;
   }
@@ -306,18 +316,27 @@
   }
 
   .property-card__actions {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .property-card__actions-left {
-    flex-direction: column;
-    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .property-card__actions-left button,
   .property-card__actions > .danger-button {
     width: 100%;
     min-width: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .property-card {
+    padding: 18px;
+  }
+
+  .property-card__actions-left {
+    grid-template-columns: 1fr;
   }
 }

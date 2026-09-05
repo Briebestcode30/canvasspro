@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
+import { UserPlus } from "lucide-react";
 import "./App.css";
 
 import Progress from "./pages/Progress";
@@ -27,11 +28,6 @@ const STORAGE_KEYS = {
 };
 
 const defaultHourlyAnalysis = {
-  "3:00 PM": {
-    plusOne: "",
-    delta: "",
-    plusTwo: "",
-  },
   "4:00 PM": {
     plusOne: "",
     delta: "",
@@ -84,7 +80,6 @@ function App() {
   const [currentPersonIndex, setCurrentPersonIndex] = useState(0);
 
   const [showAddPersonForm, setShowAddPersonForm] = useState(false);
-
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
 
   const [currentUser, setCurrentUser] = useState(null);
@@ -302,7 +297,6 @@ function App() {
     );
 
     setCurrentPersonIndex(newPersonIndex);
-
     setShowAddPersonForm(false);
   }
 
@@ -433,7 +427,6 @@ function App() {
     const remainingHomes = canvassableProperties.length - visitedHomes;
 
     const analysisTimes = [
-      "3:00 PM",
       "4:00 PM",
       "5:00 PM",
       "6:00 PM",
@@ -645,10 +638,12 @@ function App() {
         <div className="addresses-actions">
           <button
             type="button"
-            className="addresses-actions__button"
+            className="addresses-actions__button addresses-actions__button--person"
             onClick={handleOpenAddPersonForm}
+            aria-label="Add person to current address"
+            title="Add Person"
           >
-            Add Person to Current Address
+            <UserPlus size={24} />
           </button>
 
           <button

@@ -298,16 +298,19 @@ body {
   color: #ffffff;
 }
 
+/* Addresses / People actions */
+
 .addresses-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  gap: 14px;
+  width: 100%;
   margin-bottom: 24px;
 }
 
 .addresses-actions__button {
   min-height: 40px;
+  margin: 0;
   padding: 8px 14px;
   border: 2px solid #2563eb;
   border-radius: 12px;
@@ -319,7 +322,8 @@ body {
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .addresses-actions__button:hover {
@@ -327,13 +331,42 @@ body {
   background: #1d4ed8;
 }
 
+.addresses-actions__button:active {
+  transform: scale(0.97);
+}
+
+/* Person + button */
+
+.addresses-actions__button--person {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.addresses-actions__button--person svg {
+  width: 23px;
+  height: 23px;
+  pointer-events: none;
+}
+
+/* Add new address button stays on the right */
+
 .addresses-actions__button--secondary {
+  width: auto;
   margin-left: auto;
   background: #ffffff;
   color: #2563eb;
 }
 
 .addresses-actions__button--secondary:hover {
+  border-color: #2563eb;
   background: #eff6ff;
   color: #1d4ed8;
 }
@@ -381,6 +414,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+  margin: 0;
   padding: 13px 15px;
   border: 1px solid #cbd5e1;
   border-radius: 14px;
@@ -456,14 +490,18 @@ body {
   }
 
   .addresses-actions {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
   }
 
-  .addresses-actions__button,
+  .addresses-actions__button--person {
+    width: 46px;
+    min-width: 46px;
+  }
+
   .addresses-actions__button--secondary {
-    width: 100%;
-    margin-left: 0;
+    width: auto;
+    margin-left: auto;
   }
 
   .person-selector {
@@ -487,5 +525,16 @@ body {
   .dashboard-shift__notes,
   .dashboard-analysis {
     padding: 20px;
+  }
+}
+
+@media (max-width: 460px) {
+  .addresses-actions {
+    flex-wrap: wrap;
+  }
+
+  .addresses-actions__button--secondary {
+    max-width: calc(100% - 60px);
+    white-space: normal;
   }
 }

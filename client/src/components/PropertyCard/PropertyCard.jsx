@@ -31,6 +31,7 @@ function PropertyCard({
   const [waMembershipJoin, setWaMembershipJoin] = useState(false);
   const [textMessageOk, setTextMessageOk] = useState(false);
   const [hotContact, setHotContact] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
     if (!currentPerson) {
@@ -45,6 +46,7 @@ function PropertyCard({
       setWaMembershipJoin(false);
       setTextMessageOk(false);
       setHotContact(false);
+      setSaveMessage("");
 
       return;
     }
@@ -64,6 +66,7 @@ function PropertyCard({
     setWaMembershipJoin(Boolean(currentPerson.waMembershipJoin));
     setTextMessageOk(Boolean(currentPerson.textMessageOk));
     setHotContact(Boolean(currentPerson.hotContact));
+    setSaveMessage("");
   }, [property?.id, selectedPersonIndex, currentPerson?.id]);
 
   function handleOutcomeChange(data) {
@@ -91,13 +94,9 @@ function PropertyCard({
       hotContact,
     };
 
-    const updatedPeople = property.people.map((person, index) => {
-      if (index === selectedPersonIndex) {
-        return updatedPerson;
-      }
-
-      return person;
-    });
+    const updatedPeople = property.people.map((person, index) =>
+      index === selectedPersonIndex ? updatedPerson : person,
+    );
 
     return {
       ...property,
@@ -113,6 +112,12 @@ function PropertyCard({
     const updatedProperty = createUpdatedProperty();
 
     onSaveProperty(updatedProperty);
+
+    setSaveMessage("Contact saved.");
+
+    window.setTimeout(() => {
+      setSaveMessage("");
+    }, 2000);
 
     if (currentIndex < totalProperties - 1) {
       onNext();
@@ -321,12 +326,16 @@ function PropertyCard({
 
           <SaveButton
             onSaveAndNext={handleSaveAndNext}
-            disableSaveAndNext={currentIndex === totalProperties - 1}
+            disableSaveAndNext={false}
           />
         </div>
 
         <EmergencyButton />
       </div>
+
+      {saveMessage && (
+        <p className="property-card__save-message">{saveMessage}</p>
+      )}
     </section>
   );
 }

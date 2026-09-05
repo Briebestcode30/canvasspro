@@ -54,6 +54,10 @@
   font-weight: 700;
 }
 
+/* =========================
+   LOCATION CONTROLS
+========================= */
+
 .route-map__location-controls {
   display: flex;
   align-items: center;
@@ -123,6 +127,10 @@
   background: #16a34a;
 }
 
+/* =========================
+   WARNINGS
+========================= */
+
 .route-map__warning {
   margin-bottom: 16px;
   padding: 12px 16px;
@@ -133,6 +141,10 @@
   font-size: 14px;
   font-weight: 700;
 }
+
+/* =========================
+   MAP
+========================= */
 
 .route-map__map-shell {
   position: relative;
@@ -149,28 +161,42 @@
   overflow: hidden;
 }
 
+/* =========================
+   HOMES SIDE ARROW
+========================= */
+
 .route-map__homes-toggle {
   position: absolute;
   top: 50%;
   left: 0;
   z-index: 1200;
+
   width: 38px;
   height: 64px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   margin: 0;
   padding: 0;
+
   border: none;
   border-radius: 0 14px 14px 0;
+
   background: #1e3a8a;
   color: #ffffff;
+
   font-size: 32px;
   font-weight: 700;
   line-height: 1;
+
   cursor: pointer;
+
   transform: translateY(-50%);
+
   box-shadow: 4px 0 12px rgba(15, 23, 42, 0.18);
+
   transition:
     left 0.25s ease,
     background-color 0.2s ease;
@@ -184,20 +210,33 @@
   left: 320px;
 }
 
+/* =========================
+   HOMES PANEL
+========================= */
+
 .route-map__homes-panel {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
+
   z-index: 1100;
+
   width: 320px;
+
   display: flex;
   flex-direction: column;
+
   padding: 20px;
+
   background: rgba(255, 255, 255, 0.98);
+
   border-right: 1px solid #cbd5e1;
+
   box-shadow: 10px 0 30px rgba(15, 23, 42, 0.14);
+
   transform: translateX(-100%);
+
   transition: transform 0.25s ease;
 }
 
@@ -209,63 +248,92 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 16px;
+
   margin-bottom: 16px;
   padding-bottom: 14px;
+
   border-bottom: 1px solid #e2e8f0;
 }
 
 .route-map__homes-header p {
   margin: 0 0 3px;
+
   color: #dc2626;
+
   font-size: 12px;
   font-weight: 800;
+
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
 
 .route-map__homes-header h3 {
   margin: 0;
+
   color: #1e3a8a;
+
   font-size: 22px;
 }
 
 .route-map__homes-header > span {
   min-width: 34px;
   height: 34px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   padding: 0 9px;
+
   border-radius: 999px;
+
   background: #eff6ff;
   color: #2563eb;
+
   font-size: 13px;
   font-weight: 800;
 }
 
+/* =========================
+   HOMES LIST
+========================= */
+
 .route-map__homes-list {
   flex: 1;
+
   display: flex;
   flex-direction: column;
+
   gap: 9px;
+
   overflow-y: auto;
+
   padding-right: 4px;
 }
 
 .route-map__home-item {
   width: 100%;
+
   display: flex;
   align-items: flex-start;
+
   gap: 11px;
+
   margin: 0;
   padding: 12px;
+
   border: 1px solid #e2e8f0;
   border-radius: 13px;
+
   background: #ffffff;
   color: #334155;
+
   text-align: left;
+
   cursor: pointer;
+
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -289,13 +357,18 @@
 .route-map__home-number {
   width: 30px;
   height: 30px;
+
   flex-shrink: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 50%;
+
   background: #1e3a8a;
   color: #ffffff;
+
   font-size: 13px;
   font-weight: 800;
 }
@@ -306,22 +379,30 @@
 
 .route-map__home-details {
   min-width: 0;
+
   display: flex;
   flex-direction: column;
+
   gap: 4px;
 }
 
 .route-map__home-details strong {
   color: #0f172a;
+
   font-size: 14px;
   line-height: 1.35;
 }
 
 .route-map__home-details small {
   color: #64748b;
+
   font-size: 12px;
   line-height: 1.4;
 }
+
+/* =========================
+   PROPERTY MAP MARKERS
+========================= */
 
 .route-map__custom-icon {
   background: transparent;
@@ -331,16 +412,22 @@
 .route-map__numbered-marker {
   width: 42px;
   height: 42px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border: 3px solid #ffffff;
   border-radius: 50%;
+
   background: #2563eb;
   color: #ffffff;
+
   font-size: 16px;
   font-weight: 800;
+
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
   transition:
     background-color 0.2s ease,
     transform 0.2s ease;
@@ -351,57 +438,88 @@
   transform: scale(1.15);
 }
 
+/* =========================
+   USER CURRENT LOCATION
+========================= */
+
 .route-map__user-location-icon {
   background: transparent;
   border: none;
 }
 
+/*
+  BLUE = canvasser's current GPS location.
+  This is separate from the property status colors.
+*/
+
 .route-map__user-location-marker {
   width: 34px;
   height: 34px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border: 4px solid #ffffff;
   border-radius: 50%;
-  background: #000000;
+
+  background: #2563eb;
+
   box-shadow:
-    0 0 0 4px rgba(0, 0, 0, 0.18),
-    0 4px 12px rgba(0, 0, 0, 0.35);
+    0 0 0 4px rgba(37, 99, 235, 0.22),
+    0 4px 12px rgba(37, 99, 235, 0.35);
 }
 
 .route-map__user-location-dot {
   width: 10px;
   height: 10px;
+
   border-radius: 50%;
+
   background: #ffffff;
 }
 
+/* =========================
+   LEAFLET POPUP
+========================= */
+
 .route-map .leaflet-popup-content {
   min-width: 190px;
+
   color: #334155;
+
   line-height: 1.5;
 }
 
 .route-map .leaflet-popup-content strong {
   color: #0f172a;
+
   font-size: 14px;
 }
 
 .route-map__popup-button {
   margin-top: 10px;
+
   padding: 8px 14px;
+
   border: none;
   border-radius: 999px;
+
   background: #2563eb;
   color: #ffffff;
+
   font-weight: 700;
+
   cursor: pointer;
 }
 
 .route-map__popup-button:hover {
   background: #1d4ed8;
 }
+
+/* =========================
+   TABLET
+========================= */
 
 @media (max-width: 1100px) {
   .route-map {
@@ -412,6 +530,10 @@
     height: 500px;
   }
 }
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 700px) {
   .route-map {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -55,16 +55,87 @@ function LocationController({
   return null;
 }
 
-function createNumberedIcon(number, isActive) {
+/*
+  PROPERTY STATUS COLORS
+
+  Gray   = Not Knocked
+  Orange = Knocked + Not Home
+  Black  = Refused
+  Blue   = Signed Up
+  Pink   = Inaccessible
+*/
+
+function getPropertyStatus(property) {
+  const people = Array.isArray(property.people) ? property.people : [];
+
+  const hasSignup = people.some(
+    (person) => person.ctaSigned === true || person.waMembershipJoin === true,
+  );
+
+  if (hasSignup) {
+    return "signup";
+  }
+
+  const hasRefused = people.some((person) => person.outcome === "Refused");
+
+  if (hasRefused) {
+    return "refused";
+  }
+
+  const hasInaccessible = people.some(
+    (person) => person.outcome === "Inaccessible",
+  );
+
+  if (hasInaccessible) {
+    return "inaccessible";
+  }
+
+  const hasNotHome = people.some(
+    (person) => person.knocked === true && person.outcome === "Not Home",
+  );
+
+  if (hasNotHome) {
+    return "not-home";
+  }
+
+  return "unvisited";
+}
+
+function getStatusLabel(status) {
+  switch (status) {
+    case "signup":
+      return "Signed Up";
+
+    case "refused":
+      return "Refused";
+
+    case "inaccessible":
+      return "Inaccessible";
+
+    case "not-home":
+      return "Knocked — Not Home";
+
+    default:
+      return "Not Knocked";
+  }
+}
+
+function createNumberedIcon(number, isActive, status) {
   return L.divIcon({
     className: "route-map__custom-icon",
+
     html: `
-      <div class="route-map__numbered-marker ${
-        isActive ? "route-map__numbered-marker--active" : ""
-      }">
+      <div
+        class="
+          route-map__numbered-marker
+          route-map__numbered-marker--${status}
+          ${isActive ? "route-map__numbered-marker--active" : ""}
+        "
+      >
         ${number}
       </div>
     `,
+
     iconSize: [42, 42],
     iconAnchor: [21, 42],
     popupAnchor: [0, -42],
@@ -74,48 +145,126 @@ function createNumberedIcon(number, isActive) {
 function createUserLocationIcon() {
   return L.divIcon({
     className: "route-map__user-location-icon",
+
     html: `
       <div class="route-map__user-location-marker">
         <div class="route-map__user-location-dot"></div>
       </div>
     `,
+
     iconSize: [34, 34],
     iconAnchor: [17, 17],
     popupAnchor: [0, -18],
   });
 }
 
-function RouteMap({ properties, currentIndex, onSelectProperty }) {
+function distanceBetweenLocations(firstLocation, secondLocation) {
+  if (!firstLocation || !secondLocation) {
+    return Infinity;
+  }
+
+  const earthRadius = 6371000;
+
+  const latitude1 = (firstLocation.latitude * Math.PI) / 180;
+
+  const latitude2 = (secondLocation.latitude * Math.PI) / 180;
+
+  const latitudeDifference =
+    ((secondLocation.latitude - firstLocation.latitude) * Math.PI) / 180;
+
+  const longitudeDifference =
+    ((secondLocation.longitude - firstLocation.longitude) * Math.PI) / 180;
+
+  const a =
+    Math.sin(latitudeDifference / 2) ** 2 +
+    Math.cos(latitude1) *
+      Math.cos(latitude2) *
+      Math.sin(longitudeDifference / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return earthRadius * c;
+}
+
+function RouteMap({ properties = [], currentIndex = 0, onSelectProperty }) {
   const [walkingRoute, setWalkingRoute] = useState([]);
+
   const [distance, setDistance] = useState(null);
+
   const [duration, setDuration] = useState(null);
+
   const [routeError, setRouteError] = useState("");
 
   const [userLocation, setUserLocation] = useState(null);
+
   const [locationError, setLocationError] = useState("");
+
   const [isLocating, setIsLocating] = useState(false);
+
   const [focusUserLocation, setFocusUserLocation] = useState(false);
 
   const [isHomesPanelOpen, setIsHomesPanelOpen] = useState(false);
 
   const currentProperty = properties[currentIndex];
 
-  const validProperties = properties.filter(
-    (property) =>
-      Number.isFinite(property.latitude) && Number.isFinite(property.longitude),
+  /*
+    Build route coordinates separately from contact
+    data so editing phone/email/survey information
+    does not request a new walking route.
+  */
+
+  const routeStops = useMemo(
+    () =>
+      properties
+        .filter(
+          (property) =>
+            Number.isFinite(property.latitude) &&
+            Number.isFinite(property.longitude),
+        )
+        .map((property) => ({
+          id: property.id,
+          latitude: property.latitude,
+          longitude: property.longitude,
+        })),
+    [properties],
   );
 
-  const fallbackRoute = validProperties.map((property) => [
-    property.latitude,
-    property.longitude,
-  ]);
+  const routeCoordinateKey = useMemo(
+    () =>
+      routeStops
+        .map(
+          (property) =>
+            `${property.id}:${property.latitude}:${property.longitude}`,
+        )
+        .join("|"),
+    [routeStops],
+  );
+
+  const fallbackRoute = useMemo(
+    () => routeStops.map((property) => [property.latitude, property.longitude]),
+    [routeStops],
+  );
 
   useEffect(() => {
+    let isCancelled = false;
+
     async function loadWalkingRoute() {
       try {
         setRouteError("");
 
-        const route = await getWalkingRoute(validProperties);
+        if (routeStops.length < 2) {
+          setWalkingRoute([]);
+          setDistance(null);
+          setDuration(null);
+
+          return;
+        }
+
+        const route = await getWalkingRoute(routeStops);
+
+        if (isCancelled) {
+          return;
+        }
 
         const feature = route.features?.[0];
 
@@ -132,11 +281,19 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         const summary = feature.properties?.summary;
 
         setDistance(summary?.distance ?? null);
+
         setDuration(summary?.duration ?? null);
       } catch (error) {
+        if (isCancelled) {
+          return;
+        }
+
         console.error(error);
 
         setWalkingRoute([]);
+
+        setDistance(null);
+        setDuration(null);
 
         setRouteError(
           "Walking directions unavailable. Showing route stops instead.",
@@ -144,34 +301,67 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
       }
     }
 
-    if (validProperties.length >= 2) {
-      loadWalkingRoute();
-    } else {
-      setWalkingRoute([]);
-      setDistance(null);
-      setDuration(null);
-      setRouteError("");
-    }
-  }, [properties]);
+    loadWalkingRoute();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [routeCoordinateKey]);
+
+  /*
+    BATTERY-EFFICIENT LOCATION TRACKING
+
+    Normal tracking uses lower-power location mode.
+    High accuracy is only requested when the user
+    presses My Location.
+  */
 
   useEffect(() => {
     if (!navigator.geolocation) {
       setLocationError("Location services are not supported by this browser.");
 
-      return;
+      return undefined;
     }
+
+    let lastLocation = null;
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
-        setUserLocation({
+        const nextLocation = {
           latitude: position.coords.latitude,
+
           longitude: position.coords.longitude,
+
           accuracy: position.coords.accuracy,
-        });
+        };
+
+        const movedDistance = distanceBetweenLocations(
+          lastLocation,
+          nextLocation,
+        );
+
+        const accuracyImproved =
+          !lastLocation || nextLocation.accuracy + 10 < lastLocation.accuracy;
+
+        /*
+            Only refresh the marker when:
+            - first location arrives
+            - user moved about 10 meters
+            - accuracy noticeably improves
+
+            This avoids excessive map re-renders.
+          */
+
+        if (!lastLocation || movedDistance >= 10 || accuracyImproved) {
+          lastLocation = nextLocation;
+
+          setUserLocation(nextLocation);
+        }
 
         setLocationError("");
         setIsLocating(false);
       },
+
       (error) => {
         console.error("Location error:", error);
 
@@ -185,10 +375,11 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
           setLocationError("Your current location could not be loaded.");
         }
       },
+
       {
-        enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 15000,
+        enableHighAccuracy: false,
+        maximumAge: 60000,
+        timeout: 20000,
       },
     );
 
@@ -211,7 +402,9 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
       (position) => {
         setUserLocation({
           latitude: position.coords.latitude,
+
           longitude: position.coords.longitude,
+
           accuracy: position.coords.accuracy,
         });
 
@@ -219,6 +412,7 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         setIsLocating(false);
         setFocusUserLocation(true);
       },
+
       (error) => {
         console.error("Location error:", error);
 
@@ -232,9 +426,10 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
           setLocationError("Your current location could not be loaded.");
         }
       },
+
       {
         enableHighAccuracy: true,
-        maximumAge: 0,
+        maximumAge: 10000,
         timeout: 15000,
       },
     );
@@ -242,7 +437,10 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
 
   function handleSelectHome(index) {
     setFocusUserLocation(false);
-    onSelectProperty(index);
+
+    if (onSelectProperty) {
+      onSelectProperty(index);
+    }
   }
 
   function getPeople(property) {
@@ -286,12 +484,40 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
         {durationMinutes && <span>{durationMinutes} min</span>}
       </div>
 
+      <div className="route-map__legend">
+        <span className="route-map__legend-item">
+          <span className="route-map__legend-dot route-map__legend-dot--unvisited" />
+          Not Knocked
+        </span>
+
+        <span className="route-map__legend-item">
+          <span className="route-map__legend-dot route-map__legend-dot--not-home" />
+          Not Home
+        </span>
+
+        <span className="route-map__legend-item">
+          <span className="route-map__legend-dot route-map__legend-dot--refused" />
+          Refused
+        </span>
+
+        <span className="route-map__legend-item">
+          <span className="route-map__legend-dot route-map__legend-dot--signup" />
+          Signed Up
+        </span>
+
+        <span className="route-map__legend-item">
+          <span className="route-map__legend-dot route-map__legend-dot--inaccessible" />
+          Inaccessible
+        </span>
+      </div>
+
       <div className="route-map__location-controls">
         <button
           type="button"
           className="route-map__location-button"
           onClick={handleLocateUser}
           disabled={isLocating}
+          aria-label="Show my current location"
         >
           <span className="route-map__location-arrow">➤</span>
 
@@ -327,6 +553,7 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
           <div className="route-map__homes-header">
             <div>
               <p>Today's Route</p>
+
               <h3>Homes</h3>
             </div>
 
@@ -337,19 +564,27 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
             {properties.map((property, index) => {
               const people = getPeople(property);
 
+              const status = getPropertyStatus(property);
+
               return (
                 <button
                   key={property.id}
                   type="button"
-                  className={`route-map__home-item ${
+                  className={`route-map__home-item route-map__home-item--${status} ${
                     index === currentIndex ? "route-map__home-item--active" : ""
                   }`}
                   onClick={() => handleSelectHome(index)}
                 >
-                  <span className="route-map__home-number">{index + 1}</span>
+                  <span
+                    className={`route-map__home-number route-map__home-number--${status}`}
+                  >
+                    {index + 1}
+                  </span>
 
                   <span className="route-map__home-details">
                     <strong>{property.address}</strong>
+
+                    <small>{getStatusLabel(status)}</small>
 
                     {people.length > 0 && (
                       <small>
@@ -420,17 +655,25 @@ function RouteMap({ properties, currentIndex, onSelectProperty }) {
 
             const people = getPeople(property);
 
+            const status = getPropertyStatus(property);
+
             return (
               <Marker
                 key={property.id}
                 position={[property.latitude, property.longitude]}
-                icon={createNumberedIcon(index + 1, index === currentIndex)}
+                icon={createNumberedIcon(
+                  index + 1,
+                  index === currentIndex,
+                  status,
+                )}
                 eventHandlers={{
                   click: () => handleSelectHome(index),
                 }}
               >
                 <Popup>
                   <strong>{property.address}</strong>
+                  <br />
+                  Status: <strong>{getStatusLabel(status)}</strong>
                   {people.length > 0 && (
                     <>
                       <br />
