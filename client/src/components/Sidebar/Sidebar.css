@@ -1,50 +1,83 @@
 .sidebar {
   width: 280px;
   height: 100vh;
+
   position: sticky;
   top: 0;
+
+  flex-shrink: 0;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   padding: 30px;
+
+  overflow-y: auto;
+
   border-right: 1px solid #e2e8f0;
+
   background: #ffffff;
 }
 
+/* =========================
+   LOGO
+========================= */
+
 .sidebar__logo {
-  margin-bottom: 40px;
+  margin-bottom: 34px;
 }
 
 .sidebar__logo h2 {
   margin: 0;
+
   color: #1e3a8a;
+
   font-size: 30px;
   font-weight: 800;
+  line-height: 1.2;
 }
+
+/* =========================
+   NAVIGATION
+========================= */
 
 .sidebar__nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .sidebar__item {
   width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
+
+  padding: 13px 14px;
+
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
+
   background: transparent;
+
   color: #334155;
+
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.2;
+
   text-decoration: none;
+
   cursor: pointer;
+
   transition:
     background-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .sidebar__item svg {
@@ -52,67 +85,116 @@
 }
 
 .sidebar__item span {
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .sidebar__item:hover {
   background: #eff6ff;
+
   color: #2563eb;
+}
+
+.sidebar__item:focus-visible {
+  outline: none;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 
 .sidebar__item.active {
   background: #2563eb;
+
   color: #ffffff;
 }
+
+.sidebar__item.active:hover {
+  background: #1d4ed8;
+
+  color: #ffffff;
+}
+
+/* =========================
+   BOTTOM BUTTONS
+========================= */
 
 .sidebar__bottom {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+
+  margin-top: 28px;
 }
 
 .sidebar__emergency,
 .sidebar__logout {
   width: 100%;
   min-height: 46px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
+
   margin: 0;
   padding: 10px 14px;
+
   border-radius: 12px;
+
+  font-family: inherit;
   font-size: 14px;
   font-weight: 700;
+
   cursor: pointer;
+
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease,
+    box-shadow 0.2s ease,
     transform 0.2s ease;
 }
 
 .sidebar__emergency {
   border: 2px solid #dc2626;
+
   background: #dc2626;
   color: #ffffff;
 }
 
 .sidebar__emergency:hover {
   border-color: #b91c1c;
+
   background: #b91c1c;
+}
+
+.sidebar__emergency:focus-visible {
+  outline: none;
+
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.16);
 }
 
 .sidebar__logout {
   border: 2px solid #cbd5e1;
+
   background: #ffffff;
   color: #334155;
 }
 
 .sidebar__logout:hover {
   border-color: #2563eb;
+
   background: #eff6ff;
   color: #2563eb;
+}
+
+.sidebar__logout:focus-visible {
+  outline: none;
+
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
 }
 
 .sidebar__emergency:active,
@@ -125,9 +207,14 @@
   flex-shrink: 0;
 }
 
+/* =========================
+   DARK MODE
+========================= */
+
 @media (prefers-color-scheme: dark) {
   .sidebar {
     border-right-color: #334155;
+
     background: #0f172a;
   }
 
@@ -141,31 +228,50 @@
 
   .sidebar__item:hover {
     background: #1e293b;
+
     color: #93c5fd;
   }
 
   .sidebar__item.active {
     background: #2563eb;
+
+    color: #ffffff;
+  }
+
+  .sidebar__item.active:hover {
+    background: #1d4ed8;
+
     color: #ffffff;
   }
 
   .sidebar__logout {
     border-color: #475569;
+
     background: #0f172a;
     color: #e2e8f0;
   }
 
   .sidebar__logout:hover {
     border-color: #60a5fa;
+
     background: #1e293b;
     color: #93c5fd;
   }
 }
 
+/* =========================
+   TABLET
+========================= */
+
 @media (max-width: 900px) {
   .sidebar {
     width: 230px;
+
     padding: 22px;
+  }
+
+  .sidebar__logo {
+    margin-bottom: 28px;
   }
 
   .sidebar__logo h2 {
@@ -173,7 +279,8 @@
   }
 
   .sidebar__item {
-    padding: 13px 14px;
+    padding: 12px 13px;
+
     font-size: 14px;
   }
 

@@ -1,6 +1,26 @@
 import { useState } from "react";
 import "./VisitOutcome.css";
 
+const OUTCOMES = [
+  "Not Home",
+  "Deceased",
+  "Refused",
+  "Inaccessible",
+  "Moved",
+  "Medically Incompetent",
+  "Aggressive Homeowner",
+];
+
+const INACCESSIBLE_REASONS = [
+  "No Access to Property",
+  "Locked Gate",
+  "Apartment / Building Access Denied",
+  "No Such Address",
+  "Private / Restricted Property",
+  "Unsafe to Approach",
+  "Other",
+];
+
 function VisitOutcome({
   outcome = "",
   knocked = false,
@@ -10,29 +30,17 @@ function VisitOutcome({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const outcomes = [
-    "Not Home",
-    "Deceased",
-    "Refused",
-    "Inaccessible",
-    "Moved",
-    "Medically Incompetent",
-    "Aggressive Homeowner",
-  ];
-
-  const inaccessibleReasons = [
-    "No Access to Property",
-    "Locked Gate",
-    "Apartment / Building Access Denied",
-    "No Such Address",
-    "Private / Restricted Property",
-    "Unsafe to Approach",
-    "Other",
-  ];
+  function sendOutcomeChange(data) {
+    if (typeof onOutcomeChange === "function") {
+      onOutcomeChange(data);
+    }
+  }
 
   function handleOutcomeClick(selectedOutcome) {
-    if (outcome === selectedOutcome) {
-      onOutcomeChange({
+    const isCurrentlySelected = outcome === selectedOutcome;
+
+    if (isCurrentlySelected) {
+      sendOutcomeChange({
         outcome: "",
         knocked,
         inaccessibleReason: "",
@@ -41,23 +49,27 @@ function VisitOutcome({
       return;
     }
 
-    onOutcomeChange({
+    const isInaccessible = selectedOutcome === "Inaccessible";
+
+    sendOutcomeChange({
       outcome: selectedOutcome,
-      knocked: selectedOutcome === "Inaccessible" ? false : knocked,
+      knocked: isInaccessible ? false : knocked,
       inaccessibleReason: "",
     });
   }
 
   function handleInaccessibleReasonClick(reason) {
-    onOutcomeChange({
+    const isCurrentlySelected = inaccessibleReason === reason;
+
+    sendOutcomeChange({
       outcome: "Inaccessible",
       knocked: false,
-      inaccessibleReason: inaccessibleReason === reason ? "" : reason,
+      inaccessibleReason: isCurrentlySelected ? "" : reason,
     });
   }
 
   function handleClearResponse() {
-    onOutcomeChange({
+    sendOutcomeChange({
       outcome: "",
       knocked,
       inaccessibleReason: "",
@@ -65,25 +77,27 @@ function VisitOutcome({
   }
 
   return (
-    <section className="visit-outcome">
+    <section className="visit-outcome" aria-label="Visit outcome">
       <button
         type="button"
         className="visit-outcome__button"
         disabled={redDoor}
         onClick={() => setIsOpen((current) => !current)}
+        aria-expanded={isOpen}
+        aria-controls="visit-outcome-options"
       >
         I couldn't reach this contact
       </button>
 
       {redDoor && (
-        <p className="visit-outcome__red-door-message">
+        <p className="visit-outcome__red-door-message" role="alert">
           This address is marked Do Not Knock.
         </p>
       )}
 
       {!redDoor && isOpen && (
-        <div className="visit-outcome__options">
-          {outcomes.map((item) => {
+        <div id="visit-outcome-options" className="visit-outcome__options">
+          {OUTCOMES.map((item) => {
             const isSelected = outcome === item;
 
             return (
@@ -96,7 +110,7 @@ function VisitOutcome({
                   onClick={() => handleOutcomeClick(item)}
                   aria-pressed={isSelected}
                 >
-                  <span className="visit-outcome__indicator">
+                  <span className="visit-outcome__indicator" aria-hidden="true">
                     {isSelected ? "✓" : ""}
                   </span>
 
@@ -110,7 +124,7 @@ function VisitOutcome({
                     </p>
 
                     <div className="visit-outcome__inaccessible-options">
-                      {inaccessibleReasons.map((reason) => {
+                      {INACCESSIBLE_REASONS.map((reason) => {
                         const isReasonSelected = inaccessibleReason === reason;
 
                         return (
@@ -127,7 +141,10 @@ function VisitOutcome({
                             }
                             aria-pressed={isReasonSelected}
                           >
-                            <span className="visit-outcome__inaccessible-indicator">
+                            <span
+                              className="visit-outcome__inaccessible-indicator"
+                              aria-hidden="true"
+                            >
                               {isReasonSelected ? "✓" : ""}
                             </span>
 
@@ -155,7 +172,7 @@ function VisitOutcome({
       )}
 
       {!redDoor && outcome && (
-        <div className="visit-outcome__selected">
+        <div className="visit-outcome__selected" role="status">
           <p>
             Outcome: <strong>{outcome}</strong>
           </p>

@@ -1,47 +1,68 @@
 import "./HomeownerSurvey.css";
 
+const ISSUES = [
+  "Jobs",
+  "Corporate Accountability",
+  "Healthcare",
+  "Education",
+  "Secured Retirement",
+];
+
+const INDUSTRY_OPTIONS = [
+  "Healthcare",
+  "Education",
+  "Manufacturing",
+  "Construction",
+  "Technology",
+  "Retail",
+  "Transportation",
+  "Government / Public Service",
+  "Finance / Banking",
+  "Hospitality / Food Service",
+  "Agriculture",
+  "Retired",
+  "Other",
+];
+
 function HomeownerSurvey({
   importantIssue = "",
   onIssueChange,
   industries = [],
   onIndustriesChange,
 }) {
-  const issues = [
-    "Jobs",
-    "Corporate Accountability",
-    "Healthcare",
-    "Education",
-    "Secured Retirement",
-  ];
-
-  const industryOptions = [
-    "Healthcare",
-    "Education",
-    "Manufacturing",
-    "Construction",
-    "Technology",
-    "Retail",
-    "Transportation",
-    "Government / Public Service",
-    "Finance / Banking",
-    "Hospitality / Food Service",
-    "Agriculture",
-    "Retired",
-    "Other",
-  ];
-
-  const selectedIndustry = industries[0] || "";
+  const selectedIndustry =
+    Array.isArray(industries) && industries.length > 0 ? industries[0] : "";
 
   function handleIssueClick(issue) {
+    if (typeof onIssueChange !== "function") {
+      return;
+    }
+
     onIssueChange(importantIssue === issue ? "" : issue);
   }
 
   function handleIndustryClick(industry) {
+    if (typeof onIndustriesChange !== "function") {
+      return;
+    }
+
     onIndustriesChange(selectedIndustry === industry ? [] : [industry]);
   }
 
+  function handleClearIssue() {
+    if (typeof onIssueChange === "function") {
+      onIssueChange("");
+    }
+  }
+
+  function handleClearIndustry() {
+    if (typeof onIndustriesChange === "function") {
+      onIndustriesChange([]);
+    }
+  }
+
   return (
-    <section className="homeowner-survey">
+    <section className="homeowner-survey" aria-label="Homeowner survey">
       <div className="homeowner-survey__section">
         <h3>What issue is most important to you?</h3>
 
@@ -49,8 +70,12 @@ function HomeownerSurvey({
           Select one. Select the same option again to clear.
         </p>
 
-        <div className="homeowner-survey__issues">
-          {issues.map((issue) => {
+        <div
+          className="homeowner-survey__issues"
+          role="group"
+          aria-label="Important issue"
+        >
+          {ISSUES.map((issue) => {
             const isSelected = importantIssue === issue;
 
             return (
@@ -63,7 +88,10 @@ function HomeownerSurvey({
                 onClick={() => handleIssueClick(issue)}
                 aria-pressed={isSelected}
               >
-                <span className="homeowner-survey__indicator">
+                <span
+                  className="homeowner-survey__indicator"
+                  aria-hidden="true"
+                >
                   {isSelected ? "✓" : ""}
                 </span>
 
@@ -77,7 +105,7 @@ function HomeownerSurvey({
           <button
             type="button"
             className="homeowner-survey__clear"
-            onClick={() => onIssueChange("")}
+            onClick={handleClearIssue}
           >
             Clear Response
           </button>
@@ -91,8 +119,12 @@ function HomeownerSurvey({
           Select one. Select the same option again to clear.
         </p>
 
-        <div className="homeowner-survey__industries">
-          {industryOptions.map((industry) => {
+        <div
+          className="homeowner-survey__industries"
+          role="group"
+          aria-label="Industry"
+        >
+          {INDUSTRY_OPTIONS.map((industry) => {
             const isSelected = selectedIndustry === industry;
 
             return (
@@ -105,7 +137,10 @@ function HomeownerSurvey({
                 onClick={() => handleIndustryClick(industry)}
                 aria-pressed={isSelected}
               >
-                <span className="homeowner-survey__indicator">
+                <span
+                  className="homeowner-survey__indicator"
+                  aria-hidden="true"
+                >
                   {isSelected ? "✓" : ""}
                 </span>
 
@@ -119,7 +154,7 @@ function HomeownerSurvey({
           <button
             type="button"
             className="homeowner-survey__clear"
-            onClick={() => onIndustriesChange([])}
+            onClick={handleClearIndustry}
           >
             Clear Response
           </button>

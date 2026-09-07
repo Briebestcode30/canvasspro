@@ -1,57 +1,139 @@
 .route-map {
   position: sticky;
   top: 30px;
+
+  width: 100%;
+
   padding: 24px;
+
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 18px;
+
   background: #ffffff;
 }
+
+/* =========================
+   HEADER
+========================= */
 
 .route-map__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+
   margin-bottom: 20px;
 }
 
 .route-map__header h2 {
   margin: 0;
+
   color: #1e3a8a;
+
+  font-size: 24px;
+  line-height: 1.2;
 }
 
 .route-map__eyebrow {
-  margin-bottom: 5px;
+  margin: 0 0 5px;
+
   color: #dc2626;
-  font-size: 14px;
-  font-weight: 700;
+
+  font-size: 13px;
+  font-weight: 800;
+
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .route-map__position {
-  padding: 8px 14px;
-  border-radius: 999px;
+  padding: 7px 12px;
+
+  border-radius: 10px;
+
   background: #eff6ff;
   color: #2563eb;
-  font-size: 14px;
+
+  font-size: 13px;
   font-weight: 700;
+
   white-space: nowrap;
 }
+
+/* =========================
+   SUMMARY
+========================= */
 
 .route-map__summary {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+
   margin-bottom: 18px;
 }
 
 .route-map__summary span {
-  padding: 8px 14px;
-  border-radius: 999px;
+  padding: 7px 11px;
+
+  border-radius: 10px;
+
   background: #eff6ff;
   color: #1e3a8a;
+
   font-size: 13px;
   font-weight: 700;
+}
+
+/* =========================
+   STATUS LEGEND
+========================= */
+
+.route-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+
+  margin-bottom: 18px;
+}
+
+.route-map__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.route-map__legend-dot {
+  width: 12px;
+  height: 12px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.route-map__legend-dot--unvisited {
+  background: #64748b;
+}
+
+.route-map__legend-dot--not-home {
+  background: #f97316;
+}
+
+.route-map__legend-dot--refused {
+  background: #111827;
+}
+
+.route-map__legend-dot--signup {
+  background: #2563eb;
+}
+
+.route-map__legend-dot--inaccessible {
+  background: #ec4899;
 }
 
 /* =========================
@@ -63,41 +145,60 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
+
   margin-bottom: 18px;
 }
 
 .route-map__location-button {
+  min-height: 44px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
-  min-height: 44px;
+
   margin: 0;
-  padding: 10px 16px;
+  padding: 10px 15px;
+
   border: 2px solid #111827;
-  border-radius: 999px;
+  border-radius: 12px;
+
   background: #111827;
   color: #ffffff;
+
+  font-family: inherit;
   font-size: 14px;
   font-weight: 700;
+
   cursor: pointer;
+
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
-    transform 0.2s ease;
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .route-map__location-button:hover:not(:disabled) {
   border-color: #000000;
+
   background: #000000;
 }
 
+.route-map__location-button:focus-visible {
+  outline: none;
+
+  box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.18);
+}
+
 .route-map__location-button:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 .route-map__location-button:disabled {
   opacity: 0.6;
+
   cursor: wait;
 }
 
@@ -105,8 +206,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   font-size: 18px;
   line-height: 1;
+
   transform: rotate(-45deg);
 }
 
@@ -114,16 +217,21 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+
   color: #166534;
+
   font-size: 13px;
   font-weight: 700;
 }
 
 .route-map__location-status::before {
   content: "";
+
   width: 9px;
   height: 9px;
+
   border-radius: 50%;
+
   background: #16a34a;
 }
 
@@ -132,14 +240,18 @@
 ========================= */
 
 .route-map__warning {
-  margin-bottom: 16px;
+  margin: 0 0 16px;
   padding: 12px 16px;
+
   border: 1px solid #fca5a5;
   border-radius: 12px;
+
   background: #fff7f7;
   color: #b91c1c;
+
   font-size: 14px;
   font-weight: 700;
+  line-height: 1.4;
 }
 
 /* =========================
@@ -148,17 +260,24 @@
 
 .route-map__map-shell {
   position: relative;
+
   width: 100%;
+  min-width: 0;
+
   overflow: hidden;
+
   border-radius: 16px;
+
   background: #e2e8f0;
 }
 
 .route-map__map {
   width: 100%;
   height: 650px;
-  border-radius: 16px;
+
   overflow: hidden;
+
+  border-radius: 16px;
 }
 
 /* =========================
@@ -182,11 +301,12 @@
   padding: 0;
 
   border: none;
-  border-radius: 0 14px 14px 0;
+  border-radius: 0 12px 12px 0;
 
   background: #1e3a8a;
   color: #ffffff;
 
+  font-family: inherit;
   font-size: 32px;
   font-weight: 700;
   line-height: 1;
@@ -199,11 +319,20 @@
 
   transition:
     left 0.25s ease,
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .route-map__homes-toggle:hover {
   background: #172554;
+}
+
+.route-map__homes-toggle:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.25),
+    4px 0 12px rgba(15, 23, 42, 0.18);
 }
 
 .route-map__homes-toggle--open {
@@ -219,7 +348,6 @@
   top: 0;
   bottom: 0;
   left: 0;
-
   z-index: 1100;
 
   width: 320px;
@@ -229,9 +357,9 @@
 
   padding: 20px;
 
-  background: rgba(255, 255, 255, 0.98);
-
   border-right: 1px solid #cbd5e1;
+
+  background: rgba(255, 255, 255, 0.98);
 
   box-shadow: 10px 0 30px rgba(15, 23, 42, 0.14);
 
@@ -248,7 +376,6 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-
   gap: 16px;
 
   margin-bottom: 16px;
@@ -275,6 +402,7 @@
   color: #1e3a8a;
 
   font-size: 22px;
+  line-height: 1.2;
 }
 
 .route-map__homes-header > span {
@@ -287,7 +415,7 @@
 
   padding: 0 9px;
 
-  border-radius: 999px;
+  border-radius: 10px;
 
   background: #eff6ff;
   color: #2563eb;
@@ -305,8 +433,9 @@
 
   display: flex;
   flex-direction: column;
-
   gap: 9px;
+
+  min-height: 0;
 
   overflow-y: auto;
 
@@ -315,10 +444,10 @@
 
 .route-map__home-item {
   width: 100%;
+  min-width: 0;
 
   display: flex;
   align-items: flex-start;
-
   gap: 11px;
 
   margin: 0;
@@ -330,6 +459,7 @@
   background: #ffffff;
   color: #334155;
 
+  font-family: inherit;
   text-align: left;
 
   cursor: pointer;
@@ -337,12 +467,22 @@
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
+    box-shadow 0.2s ease,
     transform 0.2s ease;
 }
 
 .route-map__home-item:hover {
   border-color: #93c5fd;
+
   background: #eff6ff;
+}
+
+.route-map__home-item:focus-visible {
+  outline: none;
+
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 
 .route-map__home-item:active {
@@ -351,8 +491,15 @@
 
 .route-map__home-item--active {
   border-color: #2563eb;
+
   background: #dbeafe;
+
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
 }
+
+/* =========================
+   HOME NUMBER STATUS
+========================= */
 
 .route-map__home-number {
   width: 30px;
@@ -364,29 +511,70 @@
   align-items: center;
   justify-content: center;
 
+  border: 2px solid transparent;
   border-radius: 50%;
 
-  background: #1e3a8a;
   color: #ffffff;
 
   font-size: 13px;
   font-weight: 800;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+.route-map__home-number--unvisited {
+  background: #64748b;
+}
+
+.route-map__home-number--not-home {
+  background: #f97316;
+}
+
+.route-map__home-number--refused {
+  background: #111827;
+}
+
+.route-map__home-number--signup {
+  background: #2563eb;
+}
+
+.route-map__home-number--inaccessible {
+  background: #ec4899;
+}
+
+/*
+  Active home keeps its real status color.
+  The active state is shown using a ring.
+*/
 
 .route-map__home-item--active .route-map__home-number {
-  background: #dc2626;
+  border-color: #ffffff;
+
+  transform: scale(1.08);
+
+  box-shadow:
+    0 0 0 3px #2563eb,
+    0 3px 8px rgba(15, 23, 42, 0.2);
 }
 
+/* =========================
+   HOME DETAILS
+========================= */
+
 .route-map__home-details {
+  flex: 1;
   min-width: 0;
 
   display: flex;
   flex-direction: column;
-
   gap: 4px;
 }
 
 .route-map__home-details strong {
+  overflow-wrap: anywhere;
+
   color: #0f172a;
 
   font-size: 14px;
@@ -394,6 +582,8 @@
 }
 
 .route-map__home-details small {
+  overflow-wrap: anywhere;
+
   color: #64748b;
 
   font-size: 12px;
@@ -420,7 +610,6 @@
   border: 3px solid #ffffff;
   border-radius: 50%;
 
-  background: #2563eb;
   color: #ffffff;
 
   font-size: 16px;
@@ -429,13 +618,43 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 
   transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
+.route-map__numbered-marker--unvisited {
+  background: #64748b;
+}
+
+.route-map__numbered-marker--not-home {
+  background: #f97316;
+}
+
+.route-map__numbered-marker--refused {
+  background: #111827;
+}
+
+.route-map__numbered-marker--signup {
+  background: #2563eb;
+}
+
+.route-map__numbered-marker--inaccessible {
+  background: #ec4899;
+}
+
+/*
+  IMPORTANT:
+  Selecting a marker does NOT change its
+  background/status color.
+*/
+
 .route-map__numbered-marker--active {
-  background: #dc2626;
-  transform: scale(1.15);
+  transform: scale(1.18);
+
+  box-shadow:
+    0 0 0 4px #2563eb,
+    0 0 0 7px rgba(255, 255, 255, 0.95),
+    0 6px 16px rgba(15, 23, 42, 0.35);
 }
 
 /* =========================
@@ -446,11 +665,6 @@
   background: transparent;
   border: none;
 }
-
-/*
-  BLUE = canvasser's current GPS location.
-  This is separate from the property status colors.
-*/
 
 .route-map__user-location-marker {
   width: 34px;
@@ -499,22 +713,32 @@
 
 .route-map__popup-button {
   margin-top: 10px;
-
-  padding: 8px 14px;
+  padding: 8px 13px;
 
   border: none;
-  border-radius: 999px;
+  border-radius: 10px;
 
   background: #2563eb;
   color: #ffffff;
 
+  font-family: inherit;
   font-weight: 700;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .route-map__popup-button:hover {
   background: #1d4ed8;
+}
+
+.route-map__popup-button:focus-visible {
+  outline: none;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 /* =========================
@@ -538,11 +762,17 @@
 @media (max-width: 700px) {
   .route-map {
     padding: 16px;
+
+    border-radius: 16px;
   }
 
   .route-map__header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .route-map__legend {
+    gap: 9px 12px;
   }
 
   .route-map__location-controls {
@@ -560,10 +790,56 @@
 
   .route-map__homes-panel {
     width: min(82%, 300px);
+
     padding: 16px;
   }
 
   .route-map__homes-toggle--open {
     left: min(82%, 300px);
+  }
+}
+
+/* =========================
+   SMALL PHONES
+========================= */
+
+@media (max-width: 430px) {
+  .route-map {
+    padding: 14px;
+  }
+
+  .route-map__header h2 {
+    font-size: 21px;
+  }
+
+  .route-map__position {
+    padding: 6px 10px;
+
+    font-size: 12px;
+  }
+
+  .route-map__summary span {
+    padding: 6px 9px;
+
+    font-size: 12px;
+  }
+
+  .route-map__map {
+    height: 380px;
+  }
+
+  .route-map__homes-panel {
+    width: 88%;
+
+    padding: 14px;
+  }
+
+  .route-map__homes-toggle--open {
+    left: 88%;
+  }
+
+  .route-map__homes-toggle {
+    width: 34px;
+    height: 58px;
   }
 }

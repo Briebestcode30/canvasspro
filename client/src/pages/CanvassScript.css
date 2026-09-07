@@ -1,0 +1,212 @@
+.canvass-script {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.canvass-script .page-heading {
+  margin-bottom: 24px;
+}
+
+.canvass-script .page-heading h1 {
+  margin: 0 0 8px;
+  color: #1e3a8a;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.canvass-script__intro {
+  max-width: 700px;
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Script cards */
+
+.canvass-script__list {
+  display: grid;
+  gap: 16px;
+}
+
+.canvass-script__card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 20px 22px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.canvass-script__card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 14px;
+}
+
+.canvass-script__card-header h2 {
+  margin: 0;
+
+  color: #1e293b;
+
+  font-size: 19px;
+  font-weight: 800;
+}
+
+/* Step number */
+
+.canvass-script__step {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* Main script text */
+
+.canvass-script__text {
+  margin: 0;
+
+  color: #1e293b;
+
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+/* Stage directions / follow-up */
+
+.canvass-script__follow-up {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+
+  background: #eff6ff;
+  color: #1e3a8a;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+/* Record info questions */
+
+.canvass-script__prompts {
+  display: grid;
+  gap: 8px;
+
+  margin-top: 14px;
+}
+
+.canvass-script__prompts p {
+  margin: 0;
+  padding: 11px 14px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #f8fafc;
+  color: #1e293b;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* Give important sections a little more emphasis */
+
+.canvass-script__card:nth-child(6),
+.canvass-script__card:nth-child(9),
+.canvass-script__card:nth-child(10) {
+  border-left: 5px solid #2563eb;
+}
+
+/* Tablet */
+
+@media (max-width: 700px) {
+  .canvass-script {
+    max-width: 100%;
+  }
+
+  .canvass-script .page-heading h1 {
+    font-size: 26px;
+  }
+
+  .canvass-script__card {
+    padding: 18px;
+  }
+
+  .canvass-script__text {
+    font-size: 16px;
+  }
+}
+
+/* Phone */
+
+@media (max-width: 480px) {
+  .canvass-script .page-heading h1 {
+    font-size: 24px;
+  }
+
+  .canvass-script__intro {
+    font-size: 14px;
+  }
+
+  .canvass-script__list {
+    gap: 12px;
+  }
+
+  .canvass-script__card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .canvass-script__card-header {
+    gap: 10px;
+  }
+
+  .canvass-script__card-header h2 {
+    font-size: 18px;
+  }
+
+  .canvass-script__step {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+
+  .canvass-script__text {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .canvass-script__follow-up {
+    font-size: 14px;
+  }
+
+  .canvass-script__prompts p {
+    font-size: 14px;
+  }
+}

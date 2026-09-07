@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import "./AddAddressForm.css";
 
 import HomeownerSurvey from "../HomeownerSurvey/HomeownerSurvey";
@@ -7,33 +8,105 @@ import Notes from "../Notes/Notes";
 
 function AddAddressForm({ onAddAddress, onCancel }) {
   const [address, setAddress] = useState("");
+
   const [name, setName] = useState("");
+
   const [age, setAge] = useState("");
+
   const [phone, setPhone] = useState("");
+
   const [email, setEmail] = useState("");
+
   const [importantIssue, setImportantIssue] = useState("");
+
   const [industries, setIndustries] = useState([]);
+
   const [outcome, setOutcome] = useState("");
+
   const [knocked, setKnocked] = useState(false);
+
+  const [inaccessibleReason, setInaccessibleReason] = useState("");
+
   const [ctaSigned, setCtaSigned] = useState(null);
+
   const [waMembershipJoin, setWaMembershipJoin] = useState(false);
+
   const [textMessageOk, setTextMessageOk] = useState(false);
+
   const [hotContact, setHotContact] = useState(false);
+
   const [notes, setNotes] = useState("");
 
+  const [formError, setFormError] = useState("");
+
+  /* =========================
+     ESCAPE TO CANCEL
+  ========================= */
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === "Escape" && typeof onCancel === "function") {
+        onCancel();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onCancel]);
+
+  /* =========================
+     VISIT OUTCOME
+  ========================= */
+
   function handleOutcomeChange(data) {
-    setOutcome(data.outcome);
-    setKnocked(data.knocked);
+    const nextOutcome = data?.outcome || "";
+
+    setOutcome(nextOutcome);
+
+    setKnocked(Boolean(data?.knocked));
+
+    if (nextOutcome === "Inaccessible") {
+      setInaccessibleReason(data?.inaccessibleReason || "");
+    } else {
+      setInaccessibleReason("");
+    }
   }
+
+  /* =========================
+     CANCEL
+  ========================= */
+
+  function handleCancel() {
+    if (typeof onCancel === "function") {
+      onCancel();
+    }
+  }
+
+  /* =========================
+     SUBMIT
+  ========================= */
 
   function handleSubmit(event) {
     event.preventDefault();
 
     const trimmedAddress = address.trim();
+
     const trimmedName = name.trim();
+
     const numericAge = Number(age);
 
-    if (!trimmedAddress || !trimmedName) {
+    if (!trimmedAddress) {
+      setFormError("Please enter an address.");
+
+      return;
+    }
+
+    if (!trimmedName) {
+      setFormError("Please enter the person's name.");
+
       return;
     }
 
@@ -43,38 +116,68 @@ function AddAddressForm({ onAddAddress, onCancel }) {
       numericAge < 0 ||
       numericAge > 120
     ) {
+      setFormError("Please enter a valid age.");
+
       return;
     }
 
+    if (typeof onAddAddress !== "function") {
+      setFormError("Unable to save this contact.");
+
+      return;
+    }
+
+    setFormError("");
+
     onAddAddress({
       address: trimmedAddress,
+
       person: {
         name: trimmedName,
+
         age: numericAge,
+
         phone: phone.trim(),
+
         email: email.trim(),
-        notes,
+
+        notes: notes.trim(),
+
         outcome,
+
         knocked,
+
+        inaccessibleReason:
+          outcome === "Inaccessible" ? inaccessibleReason : "",
+
         importantIssue,
+
         industries,
+
         ctaSigned,
+
         waMembershipJoin,
+
         textMessageOk,
+
         hotContact,
       },
     });
   }
 
   return (
-    <section className="add-address-form">
+    <section className="add-address-form" aria-labelledby="add-address-title">
       <div className="add-address-form__header">
         <p className="add-address-form__eyebrow">New Contact</p>
 
-        <h2>Add New Address / Person</h2>
+        <h2 id="add-address-title">Add New Address / Person</h2>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
+        {/* =====================
+            CONTACT INFORMATION
+        ===================== */}
+
         <section className="add-address-form__section">
           <h3>Contact Information</h3>
 
@@ -85,6 +188,7 @@ function AddAddressForm({ onAddAddress, onCancel }) {
               value={address}
               onChange={(event) => setAddress(event.target.value)}
               placeholder="Enter street address"
+              autoComplete="street-address"
               autoFocus
             />
           </label>
@@ -96,6 +200,7 @@ function AddAddressForm({ onAddAddress, onCancel }) {
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Enter full name"
+              autoComplete="name"
             />
           </label>
 
@@ -108,6 +213,7 @@ function AddAddressForm({ onAddAddress, onCancel }) {
               value={age}
               onChange={(event) => setAge(event.target.value)}
               placeholder="Enter age"
+              inputMode="numeric"
             />
           </label>
 
@@ -118,6 +224,7 @@ function AddAddressForm({ onAddAddress, onCancel }) {
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               placeholder="Enter phone number"
+              autoComplete="tel"
             />
           </label>
 
@@ -128,9 +235,14 @@ function AddAddressForm({ onAddAddress, onCancel }) {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="Enter email address"
+              autoComplete="email"
             />
           </label>
         </section>
+
+        {/* =====================
+            SURVEY
+        ===================== */}
 
         <HomeownerSurvey
           importantIssue={importantIssue}
@@ -138,6 +250,10 @@ function AddAddressForm({ onAddAddress, onCancel }) {
           industries={industries}
           onIndustriesChange={setIndustries}
         />
+
+        {/* =====================
+            KNOCKED
+        ===================== */}
 
         <section className="add-address-form__section">
           <label className="add-address-form__knocked">
@@ -152,52 +268,61 @@ function AddAddressForm({ onAddAddress, onCancel }) {
           </label>
         </section>
 
+        {/* =====================
+            OUTCOME
+        ===================== */}
+
         <VisitOutcome
           outcome={outcome}
           knocked={knocked}
           redDoor={false}
+          inaccessibleReason={inaccessibleReason}
           onOutcomeChange={handleOutcomeChange}
         />
+
+        {/* =====================
+            CTA
+        ===================== */}
 
         <section className="add-address-form__section">
           <h3>Did this person sign the CTA?</h3>
 
-          <div className="add-address-form__cta-options">
-            <label
+          <div
+            className="add-address-form__cta-options"
+            role="group"
+            aria-label="CTA response"
+          >
+            <button
+              type="button"
               className={`add-address-form__cta-option ${
                 ctaSigned === true
                   ? "add-address-form__cta-option--selected"
                   : ""
               }`}
+              onClick={() => setCtaSigned(ctaSigned === true ? null : true)}
+              aria-pressed={ctaSigned === true}
             >
-              <input
-                type="checkbox"
-                checked={ctaSigned === true}
-                onChange={() => setCtaSigned(ctaSigned === true ? null : true)}
-              />
+              Yes
+            </button>
 
-              <span>Yes</span>
-            </label>
-
-            <label
+            <button
+              type="button"
               className={`add-address-form__cta-option ${
                 ctaSigned === false
                   ? "add-address-form__cta-option--selected"
                   : ""
               }`}
+              onClick={() => setCtaSigned(ctaSigned === false ? null : false)}
+              aria-pressed={ctaSigned === false}
             >
-              <input
-                type="checkbox"
-                checked={ctaSigned === false}
-                onChange={() =>
-                  setCtaSigned(ctaSigned === false ? null : false)
-                }
-              />
-
-              <span>No</span>
-            </label>
+              No
+            </button>
           </div>
         </section>
+
+        {/* =====================
+            ADDITIONAL CONTACT
+        ===================== */}
 
         <section className="add-address-form__section">
           <h3>Additional Contact Information</h3>
@@ -233,13 +358,31 @@ function AddAddressForm({ onAddAddress, onCancel }) {
           </label>
         </section>
 
+        {/* =====================
+            NOTES
+        ===================== */}
+
         <Notes value={notes} onChange={setNotes} />
+
+        {/* =====================
+            ERROR
+        ===================== */}
+
+        {formError && (
+          <p className="add-address-form__error" role="alert">
+            {formError}
+          </p>
+        )}
+
+        {/* =====================
+            ACTIONS
+        ===================== */}
 
         <div className="add-address-form__actions">
           <button
             type="button"
             className="add-address-form__cancel"
-            onClick={onCancel}
+            onClick={handleCancel}
           >
             Cancel
           </button>

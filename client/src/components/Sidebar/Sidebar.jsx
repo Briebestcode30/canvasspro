@@ -5,6 +5,7 @@ import {
   Map,
   ChartNoAxesColumnIncreasing,
   UsersRound,
+  ClipboardList,
   Settings,
   ShieldAlert,
   LogOut,
@@ -24,71 +25,55 @@ function Sidebar({ onLogout }) {
   function handleLogout() {
     const confirmed = window.confirm("Are you sure you want to log out?");
 
-    if (confirmed && onLogout) {
+    if (confirmed && typeof onLogout === "function") {
       onLogout();
     }
   }
 
+  function getNavClass({ isActive }) {
+    return `sidebar__item ${isActive ? "active" : ""}`;
+  }
+
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" aria-label="Main navigation">
       <div>
         <div className="sidebar__logo">
           <h2>CanvassNow</h2>
         </div>
 
-        <nav className="sidebar__nav">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              `sidebar__item ${isActive ? "active" : ""}`
-            }
-          >
-            <LayoutDashboard size={20} />
+        <nav className="sidebar__nav" aria-label="CanvassNow navigation">
+          <NavLink to="/" end className={getNavClass}>
+            <LayoutDashboard size={20} aria-hidden="true" />
 
             <span>Dashboard</span>
           </NavLink>
 
-          <NavLink
-            to="/routes"
-            className={({ isActive }) =>
-              `sidebar__item ${isActive ? "active" : ""}`
-            }
-          >
-            <Map size={20} />
+          <NavLink to="/routes" className={getNavClass}>
+            <Map size={20} aria-hidden="true" />
 
             <span>Routes</span>
           </NavLink>
 
-          <NavLink
-            to="/progress"
-            className={({ isActive }) =>
-              `sidebar__item ${isActive ? "active" : ""}`
-            }
-          >
-            <ChartNoAxesColumnIncreasing size={20} />
+          <NavLink to="/progress" className={getNavClass}>
+            <ChartNoAxesColumnIncreasing size={20} aria-hidden="true" />
 
             <span>Progress</span>
           </NavLink>
 
-          <NavLink
-            to="/addresses"
-            className={({ isActive }) =>
-              `sidebar__item ${isActive ? "active" : ""}`
-            }
-          >
-            <UsersRound size={20} />
+          <NavLink to="/addresses" className={getNavClass}>
+            <UsersRound size={20} aria-hidden="true" />
 
             <span>Addresses / People</span>
           </NavLink>
 
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `sidebar__item ${isActive ? "active" : ""}`
-            }
-          >
-            <Settings size={20} />
+          <NavLink to="/script" className={getNavClass}>
+            <ClipboardList size={20} aria-hidden="true" />
+
+            <span>Canvass Script</span>
+          </NavLink>
+
+          <NavLink to="/settings" className={getNavClass}>
+            <Settings size={20} aria-hidden="true" />
 
             <span>Settings</span>
           </NavLink>
@@ -100,8 +85,9 @@ function Sidebar({ onLogout }) {
           type="button"
           className="sidebar__emergency"
           onClick={handleEmergencyCall}
+          aria-label="Call 911 emergency services"
         >
-          <ShieldAlert size={20} />
+          <ShieldAlert size={20} aria-hidden="true" />
 
           <span>Emergency 911</span>
         </button>
@@ -110,8 +96,9 @@ function Sidebar({ onLogout }) {
           type="button"
           className="sidebar__logout"
           onClick={handleLogout}
+          aria-label="Log out of CanvassNow"
         >
-          <LogOut size={20} />
+          <LogOut size={20} aria-hidden="true" />
 
           <span>Log Out</span>
         </button>

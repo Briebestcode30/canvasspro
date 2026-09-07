@@ -1,6 +1,10 @@
 import "./Buttons.css";
 
-function SaveButton({ onSaveAndNext, disableSaveAndNext = false }) {
+function SaveButton({
+  onSaveAndNext,
+  disableSaveAndNext = false,
+  isLastHome = false,
+}) {
   return (
     <button
       className="save-next-button"
@@ -8,7 +12,7 @@ function SaveButton({ onSaveAndNext, disableSaveAndNext = false }) {
       onClick={onSaveAndNext}
       disabled={disableSaveAndNext}
     >
-      Save & Next Home
+      {isLastHome ? "Save Visit" : "Save & Next Home"}
     </button>
   );
 }
